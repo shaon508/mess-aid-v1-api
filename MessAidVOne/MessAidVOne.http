@@ -1,0 +1,6 @@
+@MessAidVOne_HostAddress = http://localhost:5043
+
+GET {{MessAidVOne_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

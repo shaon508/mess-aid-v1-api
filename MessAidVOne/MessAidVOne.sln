@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessAidVOne.API", "MessAidVOne.API.csproj", "{A66239FF-84E1-4AA0-8810-2C558CA40AC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{B8298907-3890-48E0-A0ED-85BF25DD1242}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{DC6E0E5C-21B2-4BCC-9AC6-1E5A3A81284B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{B33F4831-A341-48CB-8660-103A421F257F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessAidVOne.Application", "..\Application\MessAidVOne.Application.csproj", "{5887559A-5E58-4B10-9786-927D7A980CC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassAidVOne.Domain", "..\MassAidVOne.Domain\MassAidVOne.Domain.csproj", "{EC422A87-3F5A-42CA-A196-8EF1AE8677F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassAidVOne.Infrastructure", "..\MassAidVOne.Infrastructure\MassAidVOne.Infrastructure.csproj", "{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessAidVOne.Persistence", "..\MessAidVOne.Persistence\MessAidVOne.Persistence.csproj", "{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A66239FF-84E1-4AA0-8810-2C558CA40AC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66239FF-84E1-4AA0-8810-2C558CA40AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66239FF-84E1-4AA0-8810-2C558CA40AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66239FF-84E1-4AA0-8810-2C558CA40AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5887559A-5E58-4B10-9786-927D7A980CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5887559A-5E58-4B10-9786-927D7A980CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5887559A-5E58-4B10-9786-927D7A980CC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5887559A-5E58-4B10-9786-927D7A980CC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC422A87-3F5A-42CA-A196-8EF1AE8677F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC422A87-3F5A-42CA-A196-8EF1AE8677F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC422A87-3F5A-42CA-A196-8EF1AE8677F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC422A87-3F5A-42CA-A196-8EF1AE8677F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A66239FF-84E1-4AA0-8810-2C558CA40AC9} = {B33F4831-A341-48CB-8660-103A421F257F}
+		{5887559A-5E58-4B10-9786-927D7A980CC8} = {B8298907-3890-48E0-A0ED-85BF25DD1242}
+		{EC422A87-3F5A-42CA-A196-8EF1AE8677F4} = {B8298907-3890-48E0-A0ED-85BF25DD1242}
+		{6F97EB06-309A-4B96-A1A7-85CCBB6DF69C} = {DC6E0E5C-21B2-4BCC-9AC6-1E5A3A81284B}
+		{BAEF2D4F-9F17-48EC-90BC-A40C16C5D907} = {DC6E0E5C-21B2-4BCC-9AC6-1E5A3A81284B}
+	EndGlobalSection
+EndGlobal

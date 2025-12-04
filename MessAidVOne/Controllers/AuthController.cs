@@ -1,0 +1,164 @@
+using System.Net;
+using MassAidVOne.Application.Interfaces;
+using MessAidVOne.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace MessAidVOne.Controllers
+{
+    [ApiController]
+    [Route("api")]
+    public class AuthController : ControllerBase
+    {
+
+        private readonly IAuthService _authService;
+        private readonly IJwtService _jwtService;
+
+        public AuthController(IAuthService authService, IJwtService jwtService)
+        {
+            _authService = authService;
+            _jwtService = jwtService;
+        }
+
+        [HttpPost("verify-email")]
+        public async Task<ActionResult> VerifyEmail(EmailVerificationRequest request)
+        {
+            var result = await _authService.VerifyEmail(request);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                }
+            );
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Otp sent successful.",
+                Data = result.Data
+            });
+
+        }
+
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp(OtpVerificationRequest request)
+        {
+            var result = await _authService.VerifyOtp(request);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                });
+            }
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "OTP verification successful.",
+                Data = result.Data
+            });
+        }
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordRequest request)
+        {
+            var result = await _authService.ForgetPassword(request);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Your reset password successfully.",
+                Data = result.Data,
+            });
+        }
+
+
+        [HttpPost("log-in")]
+        public async Task<IActionResult> Login(LogInRequest request)
+        {
+            var result = await _authService.Login(request);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                });
+            }
+
+            var user = result.Data;
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Login successful.",
+                Data = new
+                {
+                    Profile = user,
+                    Token = _jwtService.GenerateToken(user!.Id, user.Email, user.UserType)
+                }
+                //result.Data,
+                //Token = _jwtService.GenerateToken(user.Id, user.Email, user.UserType)
+            });
+        }
+
+        //[HttpPost("log-out")]
+        //[Authorize]
+        //public async Task<IActionResult> LogOut()
+        //{
+        //    var result = await _authService.Logout();
+        //    if (!result.IsSuccess)
+        //    {
+        //        return BadRequest(new ApiResponse<string>
+        //        {
+        //            HttpStatusCode = HttpStatusCode.BadRequest,
+        //            Message = result.ErrorMessage,
+        //            Data = null
+        //        });
+        //    }
+
+        //}
+
+
+        [Authorize]
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            var result = await _authService.ChangePassword(request);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Change password successful.",
+                Data = result.Data,
+            });
+        }
+
+
+    }
+}
