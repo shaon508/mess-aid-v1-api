@@ -19,6 +19,8 @@ namespace MassAidVOne.Application.Services
             _otpRepository = _unitOfWork.Repository<OtpInformation>();
         }
 
+
+        #region User creat feature
         public async Task<Result<UserInformationDto>> AddUserAsync(AddUserRequest request)
         {
             bool isUserExist = await _userRepository.GetByConditionAsync(u => u.Email == request.Email) != null;
@@ -76,6 +78,10 @@ namespace MassAidVOne.Application.Services
             };
             return Result<UserInformationDto>.Success(userDto);
         }
+        #endregion
+
+
+        #region Modify user feature
         public async Task<Result<UserInformationDto>> ModifyUserAsync(ModifyUserRequest request)
         {
             var userInfo = await _userRepository.GetByIdAsync(request.Id);
@@ -94,7 +100,7 @@ namespace MassAidVOne.Application.Services
                 }
                 photUrl = uploadResult.Data!;
             }
-            
+
             var user = new UserInformation
             {
                 Name = request.Name,
@@ -117,6 +123,10 @@ namespace MassAidVOne.Application.Services
             };
             return Result<UserInformationDto>.Success(userDto);
         }
+        #endregion
+
+
+        #region User view feature
         public async Task<Result<UserInformationDto>> GetUserInfoByUserAsync()
         {
             var userInfo = await _userRepository.GetByIdAsync(AppUserContext.UserId);
@@ -136,6 +146,9 @@ namespace MassAidVOne.Application.Services
             };
             return Result<UserInformationDto>.Success(userDto);
         }
+        #endregion
+
+
 
     }
 }

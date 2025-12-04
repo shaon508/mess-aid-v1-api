@@ -12,6 +12,7 @@ namespace MassAidVOne.Application.Services
         private readonly IRepository<OtpInformation> _otpInformationRepository;
         private readonly IRepository<UserInformation> _userInformationRepository;
         private readonly IOtpService _otpService;
+
         public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IEmailService emailService, IPasswordManagerService passwordManagerService)
         {
             _unitOfWork = unitOfWork;
@@ -21,6 +22,8 @@ namespace MassAidVOne.Application.Services
             _userInformationRepository = _unitOfWork.Repository<UserInformation>();
         }
 
+
+        #region Verify Email feature
         public async Task<Result<OtpInformationDto>> VerifyEmail(EmailVerificationRequest request)
         {
             var otp = await _otpService.GenerateOtpAndSendOtp(request.Email);
@@ -44,8 +47,10 @@ namespace MassAidVOne.Application.Services
             };
             return Result<OtpInformationDto>.Success(otpInformationDto);
         }
+        #endregion
 
-        
+
+        #region Forget password feature
         public async Task<Result<bool>> ForgetPassword(ForgetPasswordRequest request)
         {
             var user = await _userInformationRepository.GetByConditionAsync(
@@ -79,7 +84,10 @@ namespace MassAidVOne.Application.Services
 
             return Result<bool>.Success(true);
         }
+        #endregion
 
+
+        #region User log-in feature
         public async Task<Result<UserInformationDto?>> Login(LogInRequest request)
         {
             var user = await _userInformationRepository.GetByConditionAsync(u => u.Email == request.Email);
@@ -107,6 +115,10 @@ namespace MassAidVOne.Application.Services
 
             return Result<UserInformationDto?>.Success(userDto);
         }
+        #endregion
+
+
+        #region Log out feature
         public async Task<Result<bool>> Logout(CancellationToken cancellationToken)
         {
             var user = await _userInformationRepository.GetByIdAsync(AppUserContext.UserId);
@@ -118,6 +130,10 @@ namespace MassAidVOne.Application.Services
 
             return Result<bool>.Success(true);
         }
+        #endregion
+
+
+        #region Change password feature
         public async Task<Result<bool>> ChangePassword(ChangePasswordRequest request)
         {
             var userInfo = await _userInformationRepository.GetByIdAsync(AppUserContext.UserId);
@@ -148,7 +164,10 @@ namespace MassAidVOne.Application.Services
             return Result<bool>.Success(true);
 
         }
+        #endregion
 
+
+        #region Verify otp feature
         public async Task<Result<bool>> VerifyOtp(OtpVerificationRequest request)
         {
             var otpInfo = await _otpInformationRepository.GetByIdAsync(request.OtpId);
@@ -184,7 +203,10 @@ namespace MassAidVOne.Application.Services
                 return Result<bool>.Failure("Otp information is invalid.");
             }
         }
+        #endregion
 
+
+        #region User password set feature
         private async Task<Result<bool>> SetUserPassword(UserInformation userInformation, string password)
         {
             if (userInformation == null || userInformation.IsDeleted == true || userInformation.IsActive == false)
@@ -200,6 +222,8 @@ namespace MassAidVOne.Application.Services
             return Result<bool>.Success(true);
 
         }
+        #endregion
+
 
     }
 }
