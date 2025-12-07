@@ -8,7 +8,7 @@ namespace MessAidVOne.Services
 
     public interface IJwtService
     {
-        string GenerateToken(long userId, string email, string role);
+        string GenerateToken(UserInformation user, string email, string role);
     }
 
     public class JwtService : IJwtService
@@ -18,15 +18,16 @@ namespace MessAidVOne.Services
         {
             _configuration = configuration;
         }
-        public string GenerateToken(long userId, string email, string role)
+        public string GenerateToken(UserInformation user, string email, string role)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
 
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(ClaimTypes.Role, role),
+            new("UserType", user?.UserType.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));

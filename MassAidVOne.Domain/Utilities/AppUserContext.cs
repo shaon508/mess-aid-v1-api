@@ -22,8 +22,24 @@ namespace MassAidVOne.Domain.Utilities
                 }
                 return 0;
             }
-        } 
-        
+        }
+
+        public static string UserType
+        {
+            get
+            {
+                var userTypeClaim = _httpContextAccessor?.HttpContext?.User?.FindFirst("UserType")?.Value;
+
+                if (!string.IsNullOrEmpty(userTypeClaim))
+                {
+                    return userTypeClaim;
+                }
+
+                return string.Empty; 
+            }
+        }
+
+
         //public static long UserEmail
         //{
         //    get

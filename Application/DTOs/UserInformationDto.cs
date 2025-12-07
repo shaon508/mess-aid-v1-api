@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 
 public class UserInformationDto
@@ -17,6 +18,19 @@ public class UserInformationDto
 
     public string? PhotoUrl { get; set; }
 }
+
+public class LoginResponseDto
+{
+    public string Token { get; set; }
+    [JsonIgnore]
+    public string? DeviceId { get; set; }
+    [JsonIgnore]
+    public string? DeviceToken { get; set; }
+    [JsonIgnore]
+    public UserInformation User { get; set; }
+}
+
+
 public class AddUserRequest : UserInfoRequest
 {
     [Required(ErrorMessage = "Otp id is required.")]

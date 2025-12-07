@@ -28,6 +28,7 @@ namespace MassAidVOne.Persistence.Repositories
         public async Task UpdateAsync(T entity)
         {
             entity.ModifiedOn = DateTime.UtcNow;
+            entity.ModifiedBy = AppUserContext.UserId;
             _dbSet.Update(entity);
         }
 
@@ -42,7 +43,7 @@ namespace MassAidVOne.Persistence.Repositories
             {
                 entity.IsDeleted = true;
                 entity.DeletedOn = DateTime.UtcNow;
-                //entity.DeletedBy = AppUserContext.UserId;
+                entity.DeletedBy = AppUserContext.UserId;
             }
 
             _context.Set<T>().UpdateRange(entities);

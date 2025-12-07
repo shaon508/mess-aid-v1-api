@@ -88,33 +88,29 @@ namespace MassAidVOne.Application.Services
 
 
         #region User log-in feature
-        public async Task<Result<UserInformationDto?>> Login(LogInRequest request)
+        public async Task<Result<LoginResponseDto?>> Login(LogInRequest request)
         {
             var user = await _userInformationRepository.GetByConditionAsync(u => u.Email == request.Email);
 
             if (user == null)
             {
-                return Result<UserInformationDto?>.Failure("Already user exist.");
+                return Result<LoginResponseDto?>.Failure("User not found.");
             }
 
             bool isPasswordValid = _passwordManagerService.VerifyPassword(user, request.Password);
             if (!isPasswordValid)
             {
-                return Result<UserInformationDto?>.Failure("Wrong email or password.");
+                return Result<LoginResponseDto?>.Failure("Wrong email or password.");
             }
 
-            var userDto = new UserInformationDto
+            var userResponseDto = new LoginResponseDto
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Address = user.Address,
-                UserType = user.UserType,
-                PhotoUrl = user.PhotoUrl,
+                User = user,
             };
 
-            return Result<UserInformationDto?>.Success(userDto);
+            return Result<LoginResponseDto?>.Success(userResponseDto);
         }
+
         #endregion
 
 
