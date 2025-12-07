@@ -1,8 +1,10 @@
-﻿public partial class BaseEntity
+﻿using MassAidVOne.Domain.Utilities;
+
+public partial class BaseEntity
 {
     public long Id { get; set; }
 
-    public long? CreatedBy { get; set; }
+    public long? CreatedBy { get; set; } = AppUserContext.UserId;
 
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 

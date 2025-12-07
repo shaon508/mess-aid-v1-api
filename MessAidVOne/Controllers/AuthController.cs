@@ -92,6 +92,7 @@ namespace MessAidVOne.Controllers
         public async Task<IActionResult> Login(LogInRequest request)
         {
             var result = await _authService.Login(request);
+
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -102,18 +103,26 @@ namespace MessAidVOne.Controllers
                 });
             }
 
-            var user = result.Data;
+            var userInfo = result.Data;
+
+            if (userInfo == null || userInfo.User == null)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = "User not found after login.",
+                    Data = null
+                });
+            }
+
             return Ok(new ApiResponse<object>
             {
                 HttpStatusCode = HttpStatusCode.OK,
                 Message = "Login successful.",
                 Data = new
                 {
-                    Profile = user,
-                    Token = _jwtService.GenerateToken(user!.Id, user.Email, user.UserType)
+                    Token = _jwtService.GenerateToken(userInfo.User, userInfo.User.Email, userInfo.User.UserType)
                 }
-                //result.Data,
-                //Token = _jwtService.GenerateToken(user.Id, user.Email, user.UserType)
             });
         }
 
