@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MessAidVOne.API.Extensions
 {
-    public static class ApplicationServiceExtensions // Changed to static class
+    public static class ApplicationServiceExtensions 
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -20,6 +20,7 @@ namespace MessAidVOne.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IActivityService, ActivityService>();
 
             return services;
         }

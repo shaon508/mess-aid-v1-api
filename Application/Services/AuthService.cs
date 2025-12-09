@@ -1,4 +1,5 @@
 ﻿using MassAidVOne.Application.Interfaces;
+using MassAidVOne.Domain.Entities;
 using MassAidVOne.Domain.Utilities;
 using static MassAidVOne.Domain.Entities.Enum;
 
@@ -8,15 +9,17 @@ namespace MassAidVOne.Application.Services
     {
 
         public readonly IUnitOfWork _unitOfWork;
+        private readonly IOtpService _otpService;
+        private readonly IActivityService _activityService;
         private readonly IPasswordManagerService _passwordManagerService;
         private readonly IRepository<OtpInformation> _otpInformationRepository;
         private readonly IRepository<UserInformation> _userInformationRepository;
-        private readonly IOtpService _otpService;
 
-        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IEmailService emailService, IPasswordManagerService passwordManagerService)
+        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IActivityService activityService, IEmailService emailService, IPasswordManagerService passwordManagerService)
         {
             _unitOfWork = unitOfWork;
             _otpService = otpService;
+            _activityService = activityService;
             _passwordManagerService = passwordManagerService;
             _otpInformationRepository = _unitOfWork.Repository<OtpInformation>();
             _userInformationRepository = _unitOfWork.Repository<UserInformation>();
@@ -156,6 +159,17 @@ namespace MassAidVOne.Application.Services
                 return Result<bool>.Failure("Failed to update password.");
             }
 
+            await _activityService.CreateActivityAsync(
+                activityEvent: ActivityEvents.ChangedPassword,
+                actionUserId: userInfo.Id, entityId: userInfo.Id,
+                targets: new List<UserActivityDetails>
+                {
+                    new UserActivityDetails
+                    {
+                        UserId = userInfo.Id
+                    }
+                }
+            );
 
             return Result<bool>.Success(true);
 
