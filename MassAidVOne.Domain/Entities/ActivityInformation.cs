@@ -6,5 +6,7 @@
 
     public string EntityType { get; set; } = null!;
 
+    public string EventKey { get; set; } = null!;
+
     public virtual ICollection<UserActivity> UserActivities { get; set; } = new List<UserActivity>();
 }

@@ -1,4 +1,5 @@
-﻿using MessAidVOne.Persistence.Model;
+﻿using MassAidVOne.Domain.Entities;
+using MessAidVOne.Persistence.Model;
 using Microsoft.EntityFrameworkCore;
 
 public partial class MessManagementContext : DbContext
@@ -19,6 +20,9 @@ public partial class MessManagementContext : DbContext
     public virtual DbSet<UserInformation> UserInformations { get; set; }
 
     public virtual DbSet<ActivityInformation> ActivityInformations { get; set; }
+
+    public virtual DbSet<ActivityOutbox> ActivityOutboxes { get; set; }
+
 
     public virtual DbSet<UserActivity> UserActivities { get; set; }
    
@@ -149,6 +153,9 @@ public partial class MessManagementContext : DbContext
             entity.Property(e => e.EntityType)
                 .HasMaxLength(30)
                 .HasColumnName("entity_type");
+            entity.Property(e => e.EventKey)
+                .HasMaxLength(100)
+                .HasColumnName("event_key");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("'0'")
                 .HasColumnName("is_deleted");
@@ -158,6 +165,7 @@ public partial class MessManagementContext : DbContext
                 .HasColumnName("modified_on");
         });
 
+        
         modelBuilder.Entity<UserActivity>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -200,6 +208,53 @@ public partial class MessManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_user_activity_activity");
         });
+
+        modelBuilder.Entity<ActivityOutbox>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("activity_outbox");
+
+            entity.HasIndex(e => e.CreatedOn, "idx_outbox_created");
+
+            entity.HasIndex(e => new { e.Status, e.ProcessingAttempts }, "idx_outbox_status_attempts");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActorUserId).HasColumnName("actor_user_id");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CreatedOn)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("created_on");
+            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.DeletedOn)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_on");
+            entity.Property(e => e.Domain).HasColumnName("domain");
+            entity.Property(e => e.EntityId).HasColumnName("entity_id");
+            entity.Property(e => e.EntityType)
+                .HasMaxLength(50)
+                .HasColumnName("entity_type");
+            entity.Property(e => e.EventKey)
+                .HasMaxLength(100)
+                .HasColumnName("event_key");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValueSql("'0'")
+                .HasColumnName("is_deleted");
+            entity.Property(e => e.ModifiedBy).HasColumnName("modified_by");
+            entity.Property(e => e.ModifiedOn)
+                .HasColumnType("datetime")
+                .HasColumnName("modified_on");
+            entity.Property(e => e.PayloadJson)
+                .HasColumnType("json")
+                .HasColumnName("payload_json");
+            entity.Property(e => e.ProcessedAt)
+                .HasMaxLength(6)
+                .HasColumnName("processed_at");
+            entity.Property(e => e.ProcessingAttempts).HasColumnName("processing_attempts");
+            entity.Property(e => e.Status).HasColumnName("status");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

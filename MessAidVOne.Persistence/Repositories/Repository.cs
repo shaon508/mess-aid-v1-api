@@ -22,7 +22,7 @@ namespace MassAidVOne.Persistence.Repositories
         }
         public async Task DeleteAsync(T entity)
         {
-              _dbSet.Remove(entity);
+            _dbSet.Remove(entity);
         }
 
         public async Task UpdateAsync(T entity)
@@ -63,7 +63,7 @@ namespace MassAidVOne.Persistence.Repositories
             }
 
             _dbSet.UpdateRange(entityList);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateRangeSelectedAsync(Expression<Func<T, bool>> predicate, Action<T> updateAction)
@@ -121,6 +121,17 @@ namespace MassAidVOne.Persistence.Repositories
 
             return await query.Where(predicate).ToListAsync();
         }
+
+        public async Task<List<T>> GetBatchByConditionAsync(Expression<Func<T, bool>> expression, int? take = null)
+        {
+            var query = _dbSet.Where(expression);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
+
+            return await query.ToListAsync();
+        }
+
 
     }
 }

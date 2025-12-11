@@ -1,8 +1,11 @@
-﻿namespace MassAidVOne.Application.Interfaces
+﻿using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.DTOs.Responses;
+
+namespace MassAidVOne.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<OtpInformationDto>> VerifyEmail(EmailVerificationRequest request);
+        Task<Result<OtpInformationResponseDto>> VerifyEmail(EmailVerificationRequest request);
         Task<Result<bool>> VerifyOtp(OtpVerificationRequest request);
         Task<Result<bool>> ForgetPassword(ForgetPasswordRequest request);
 

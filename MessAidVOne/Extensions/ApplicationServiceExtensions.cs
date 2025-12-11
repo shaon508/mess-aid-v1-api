@@ -1,11 +1,12 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Application.Services;
-using Microsoft.AspNetCore.Identity;
+using MessAidVOne.Application.Interfaces;
+using MessAidVOne.Application.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace MessAidVOne.API.Extensions
 {
-    public static class ApplicationServiceExtensions 
+    public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -21,6 +22,7 @@ namespace MessAidVOne.API.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IActivityService, ActivityService>();
+            services.AddScoped<IActivityOutboxService, ActivityOutboxService>();
 
             return services;
         }

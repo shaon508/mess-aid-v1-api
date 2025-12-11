@@ -15,29 +15,28 @@ public class ActivityService : IActivityService
 
     public async Task CreateActivityAsync(
         ActivityEvent activityEvent,
-        long actionUserId, long entityId,
+        long actionUserId,
+        long entityId,
         List<UserActivityDetails> targets,
         Dictionary<string, string>? placeholders)
     {
         var activity = new ActivityInformation
         {
+            EventKey = activityEvent.Key,
+            ActorUserId = actionUserId,
             EntityId = entityId,
-            EntityType = activityEvent.Key,
-            ActorUserId = actionUserId
+            EntityType = activityEvent.Domain.ToString()
         };
 
         foreach (var target in targets)
         {
-            var description = ActivityDescriptionBuilder.Build(
-                activityEvent.DescriptionTemplate,
-                placeholders
-            );
-
             activity.UserActivities.Add(new UserActivity
             {
                 UserId = target.UserId,
-                IsRead = false,
-                Description = description
+                Description = ActivityDescriptionBuilder.Build(
+                    activityEvent.DescriptionTemplate,
+                    placeholders),
+                IsRead = false
             });
         }
 

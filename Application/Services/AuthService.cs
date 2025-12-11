@@ -1,6 +1,9 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Domain.Entities;
 using MassAidVOne.Domain.Utilities;
+using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.DTOs.Responses;
+using MessAidVOne.Application.Interfaces;
 using static MassAidVOne.Domain.Entities.Enum;
 
 namespace MassAidVOne.Application.Services
@@ -10,24 +13,24 @@ namespace MassAidVOne.Application.Services
 
         public readonly IUnitOfWork _unitOfWork;
         private readonly IOtpService _otpService;
-        private readonly IActivityService _activityService;
+        private readonly IActivityOutboxService _activityOutboxService;
         private readonly IPasswordManagerService _passwordManagerService;
         private readonly IRepository<OtpInformation> _otpInformationRepository;
         private readonly IRepository<UserInformation> _userInformationRepository;
 
-        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IActivityService activityService, IEmailService emailService, IPasswordManagerService passwordManagerService)
+        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IActivityService activityService, IEmailService emailService, IPasswordManagerService passwordManagerService, IActivityOutboxService activityOutboxService)
         {
             _unitOfWork = unitOfWork;
             _otpService = otpService;
-            _activityService = activityService;
             _passwordManagerService = passwordManagerService;
             _otpInformationRepository = _unitOfWork.Repository<OtpInformation>();
             _userInformationRepository = _unitOfWork.Repository<UserInformation>();
+            _activityOutboxService = activityOutboxService;
         }
 
 
         #region Verify Email feature
-        public async Task<Result<OtpInformationDto>> VerifyEmail(EmailVerificationRequest request)
+        public async Task<Result<OtpInformationResponseDto>> VerifyEmail(EmailVerificationRequest request)
         {
             var otp = await _otpService.GenerateOtpAndSendOtp(request.Email);
 
@@ -43,12 +46,12 @@ namespace MassAidVOne.Application.Services
             await _otpInformationRepository.AddAsync(otpInformation);
             await _unitOfWork.SaveChangesAsync();
 
-            var otpInformationDto = new OtpInformationDto
+            var otpInformationDto = new OtpInformationResponseDto
             {
                 OtpId = otpInformation.Id,
                 Email = otpInformation.Email,
             };
-            return Result<OtpInformationDto>.Success(otpInformationDto);
+            return Result<OtpInformationResponseDto>.Success(otpInformationDto);
         }
         #endregion
 
@@ -159,19 +162,18 @@ namespace MassAidVOne.Application.Services
                 return Result<bool>.Failure("Failed to update password.");
             }
 
-            await _activityService.CreateActivityAsync(
-                activityEvent: ActivityEvents.ChangedPassword,
-                actionUserId: userInfo.Id, entityId: userInfo.Id,
-                targets: new List<UserActivityDetails>
-                {
-                    new UserActivityDetails
-                    {
-                        UserId = userInfo.Id
-                    }
-                }
-            );
+            #region Activity Information
+            var metadata = new Dictionary<string, object>
+            {
+                { "ActorUserId", userInfo.Id },
+                { "EntityId", userInfo.Id },
+                { "EntityType", nameof(UserInformation) },
+                { "TargetUserIds", new List<long> { userInfo.Id } },
+                { "ActivityEvent", ActivityEvents.ChangedPassword }
+            };
+            #endregion
 
-            return Result<bool>.Success(true);
+            return Result<bool>.Success(true, metadata);
 
         }
         #endregion

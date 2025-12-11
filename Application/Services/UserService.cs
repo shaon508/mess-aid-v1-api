@@ -1,5 +1,6 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Domain.Utilities;
+using MessAidVOne.Application.DTOs.Requests;
 using static MassAidVOne.Domain.Entities.Enum;
 
 namespace MassAidVOne.Application.Services
@@ -21,22 +22,22 @@ namespace MassAidVOne.Application.Services
 
 
         #region User creat feature
-        public async Task<Result<UserInformationDto>> AddUserAsync(AddUserRequest request)
+        public async Task<Result<UserInformationResponseDto>> AddUserAsync(AddUserRequest request)
         {
             bool isUserExist = await _userRepository.GetByConditionAsync(u => u.Email == request.Email) != null;
             if (isUserExist)
             {
-                return Result<UserInformationDto>.Failure("User already exist."); ;
+                return Result<UserInformationResponseDto>.Failure("User already exist."); ;
             }
             var otpInfo = await _otpRepository.GetByIdAsync(request.OtpId);
             if (otpInfo == null)
             {
-                return Result<UserInformationDto>.Failure("Otp information is incorrect.");
+                return Result<UserInformationResponseDto>.Failure("Otp information is incorrect.");
             }
             bool isOtpVerified = otpInfo.IsDeleted == false && otpInfo.Status == OtpStatus.Active && otpInfo.OtpCode == request.OtpCode && otpInfo.Email == request.Email;
             if (!isOtpVerified)
             {
-                return Result<UserInformationDto>.Failure("Otp information is incorrect.");
+                return Result<UserInformationResponseDto>.Failure("Otp information is incorrect.");
             }
 
             var photUrl = string.Empty;
@@ -45,7 +46,7 @@ namespace MassAidVOne.Application.Services
                 var uploadResult = await ImageUploadUtilities.UploadImageAsync(request.Photo, FileUploadPath.User);
                 if (!uploadResult.IsSuccess)
                 {
-                    return Result<UserInformationDto>.Failure(uploadResult.Message);
+                    return Result<UserInformationResponseDto>.Failure(uploadResult.Message);
                 }
                 photUrl = uploadResult.Data!;
             }
@@ -66,7 +67,7 @@ namespace MassAidVOne.Application.Services
 
             await _userRepository.AddAsync(user);
             await _unitOfWork.SaveChangesAsync();
-            var userDto = new UserInformationDto
+            var userDto = new UserInformationResponseDto
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -76,18 +77,18 @@ namespace MassAidVOne.Application.Services
                 PhotoUrl = (user.PhotoUrl != null) ? user.PhotoUrl.ToLongUrl() : "",
                 IsActive = user.IsActive ?? false,
             };
-            return Result<UserInformationDto>.Success(userDto);
+            return Result<UserInformationResponseDto>.Success(userDto);
         }
         #endregion
 
 
         #region Modify user feature
-        public async Task<Result<UserInformationDto>> ModifyUserAsync(ModifyUserRequest request)
+        public async Task<Result<UserInformationResponseDto>> ModifyUserAsync(ModifyUserRequest request)
         {
             var userInfo = await _userRepository.GetByIdAsync(request.Id);
             if (userInfo == null || userInfo.IsDeleted == true)
             {
-                return Result<UserInformationDto>.Failure("User already exists.");
+                return Result<UserInformationResponseDto>.Failure("User already exists.");
             }
 
             var photUrl = string.Empty;
@@ -96,7 +97,7 @@ namespace MassAidVOne.Application.Services
                 var uploadResult = await ImageUploadUtilities.UploadImageAsync(request.Photo, FileUploadPath.User);
                 if (!uploadResult.IsSuccess)
                 {
-                    return Result<UserInformationDto>.Failure(uploadResult.Message);
+                    return Result<UserInformationResponseDto>.Failure(uploadResult.Message);
                 }
                 photUrl = uploadResult.Data!;
             }
@@ -111,7 +112,7 @@ namespace MassAidVOne.Application.Services
 
             await _userRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
-            var userDto = new UserInformationDto
+            var userDto = new UserInformationResponseDto
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -121,20 +122,20 @@ namespace MassAidVOne.Application.Services
                 PhotoUrl = (user.PhotoUrl != null) ? user.PhotoUrl.ToLongUrl() : "",
                 IsActive = user.IsActive ?? false,
             };
-            return Result<UserInformationDto>.Success(userDto);
+            return Result<UserInformationResponseDto>.Success(userDto);
         }
         #endregion
 
 
         #region User view feature
-        public async Task<Result<UserInformationDto>> GetUserInfoByUserAsync()
+        public async Task<Result<UserInformationResponseDto>> GetUserInfoByUserAsync()
         {
             var userInfo = await _userRepository.GetByIdAsync(AppUserContext.UserId);
             if (userInfo == null || userInfo.IsDeleted == true)
             {
-                return Result<UserInformationDto>.Failure("No user found.");
+                return Result<UserInformationResponseDto>.Failure("No user found.");
             }
-            var userDto = new UserInformationDto
+            var userDto = new UserInformationResponseDto
             {
                 Id = userInfo.Id,
                 Name = userInfo.Name,
@@ -144,7 +145,7 @@ namespace MassAidVOne.Application.Services
                 PhotoUrl = (userInfo.PhotoUrl != null) ? userInfo.PhotoUrl.ToLongUrl() : "",
                 IsActive = userInfo.IsActive ?? false,
             };
-            return Result<UserInformationDto>.Success(userDto);
+            return Result<UserInformationResponseDto>.Success(userDto);
         }
         #endregion
 

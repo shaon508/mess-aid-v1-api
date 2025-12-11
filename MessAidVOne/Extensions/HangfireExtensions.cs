@@ -74,6 +74,11 @@ namespace MessAidVOne.API.Extensions
                 "DeleteUsedOrUnUsedOtp",
                 service => service.DoDeleteUsedOrUnUsedOtp(),
                 Cron.Minutely);
+            
+            recurringJobManager.AddOrUpdate<IBackgroundServices>(
+                "DoProcessActivityOutboxAsync",
+                service => service.DoProcessActivityOutboxAsync(),
+                Cron.Minutely);
         }
     }
 }

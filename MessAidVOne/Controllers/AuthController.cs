@@ -1,5 +1,8 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
+using MassAidVOne.Domain.Entities;
+using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.Interfaces;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +15,14 @@ namespace MessAidVOne.Controllers
     {
 
         private readonly IAuthService _authService;
+        private readonly IActivityOutboxService _activityOutboxService;
         private readonly IJwtService _jwtService;
 
-        public AuthController(IAuthService authService, IJwtService jwtService)
+        public AuthController(IAuthService authService, IJwtService jwtService, IActivityOutboxService activityOutboxService)
         {
             _authService = authService;
             _jwtService = jwtService;
+            _activityOutboxService = activityOutboxService;
         }
 
         [HttpPost("verify-email")]
@@ -159,6 +164,21 @@ namespace MessAidVOne.Controllers
                     Data = null
                 });
             }
+
+            var activityEvent = (ActivityEvent)result.MetaData["ActivityEvent"];
+            var actorUserId = (long)result.MetaData["ActorUserId"];
+            var entityId = (long)result.MetaData["EntityId"];
+            var entityType = (string)result.MetaData["EntityType"];
+            var targetUserIds = (List<long>)result.MetaData["TargetUserIds"];
+
+            await _activityOutboxService.EnqueueAsync(
+                activityEvent: activityEvent,
+                actorUserId: actorUserId,
+                entityId: entityId,
+                entityType: entityType,
+                targetUserIds: targetUserIds,
+                placeholders: null
+            );
 
             return Ok(new ApiResponse<object>
             {
