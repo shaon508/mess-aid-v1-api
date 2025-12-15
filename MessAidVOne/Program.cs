@@ -12,7 +12,15 @@ builder.Services.AddSwaggerDocumentation();
 builder.Services.AddHangfireServices(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 
+//builder.Services.Configure<CloudinarySettings>(
+//    builder.Configuration.GetSection("Cloudinary"));
+
+//builder.Services.AddScoped<CloudinaryService>();
+
+
 var app = builder.Build();
+
+
 
 app.UseSwaggerDocumentation();
 
