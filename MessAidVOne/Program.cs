@@ -1,10 +1,13 @@
 using Hangfire;
+using MassAidVOne.Infrastructure.Configurations;
+using MassAidVOne.Infrastructure.Services;
 using MessAidVOne.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.AddAuthenticationServices();
 

@@ -8,8 +8,8 @@ public class CustomRepository(MessManagementContext context) : ICustomRepository
     private readonly MessManagementContext _context = context;
 
     public async Task<int> UpdateRangeSelectAsyn(string tableName,
-    Dictionary<string, object> whereConditions,
-    Dictionary<string, object> updateColumns)
+                    Dictionary<string, object> whereConditions,
+                    Dictionary<string, object> updateColumns)
     {
         if (string.IsNullOrWhiteSpace(tableName))
             throw new ArgumentException("Table name is required");
