@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace MassAidVOne.Infrastructure.Services
 {
-    public class CloudinaryService
+    public class CloudinaryService : ICloudinaryService
     {
         private readonly Cloudinary _cloudinary;
 

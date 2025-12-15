@@ -1,4 +1,7 @@
+using System.Net;
 using MassAidVOne.Infrastructure.Services;
+using MessAidVOne.Application.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessAidVOne.Controllers
@@ -7,27 +10,27 @@ namespace MessAidVOne.Controllers
     [Route("api/upload")]
     public class UploadController : ControllerBase
     {
-        private readonly CloudinaryService _cloudinaryService;
-
-        public UploadController(CloudinaryService cloudinaryService)
+        private readonly ICloudinaryService _cloudinaryService;
+        public UploadController(ICloudinaryService cloudinaryService)
         {
             _cloudinaryService = cloudinaryService;
         }
 
         [HttpPost("photo")]
-        public async Task<IActionResult> UploadPhoto([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        [Authorize]
+        public async Task<IActionResult> UploadPhoto([FromForm] UploadPhotoRequest request)
         {
-            if (file == null)
-                return BadRequest("File is required");
+            var imageUrl = await _cloudinaryService.UploadImageAsync(request.File);
 
-            var imageUrl = await _cloudinaryService.UploadImageAsync(file);
-
-            return Ok(new
+            return Ok(new ApiResponse<object>
             {
-                success = true,
-                url = imageUrl
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Image upload successful.",
+                Data = imageUrl,
             });
         }
+
     }
 
 
