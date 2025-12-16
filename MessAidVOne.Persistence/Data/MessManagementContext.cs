@@ -149,6 +149,9 @@ public partial class MessManagementContext : DbContext
             entity.Property(e => e.DeletedOn)
                 .HasColumnType("datetime")
                 .HasColumnName("deleted_on");
+            entity.Property(e => e.Description)
+                .HasMaxLength(200)
+                .HasColumnName("description");
             entity.Property(e => e.EntityId).HasColumnName("entity_id");
             entity.Property(e => e.EntityType)
                 .HasMaxLength(30)
@@ -165,7 +168,6 @@ public partial class MessManagementContext : DbContext
                 .HasColumnName("modified_on");
         });
 
-        
         modelBuilder.Entity<UserActivity>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -198,9 +200,6 @@ public partial class MessManagementContext : DbContext
             entity.Property(e => e.ReadAt)
                 .HasColumnType("datetime")
                 .HasColumnName("read_at");
-            entity.Property(e => e.Description)
-                .HasMaxLength(200)
-                .HasColumnName("description");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.Activity).WithMany(p => p.UserActivities)

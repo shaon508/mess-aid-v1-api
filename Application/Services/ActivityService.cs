@@ -25,7 +25,10 @@ public class ActivityService : IActivityService
             EventKey = activityEvent.Key,
             ActorUserId = actionUserId,
             EntityId = entityId,
-            EntityType = activityEvent.Domain.ToString()
+            EntityType = activityEvent.Domain.ToString(),
+            Description = ActivityDescriptionBuilder.Build(
+                    activityEvent.DescriptionTemplate,
+                    placeholders),
         };
 
         foreach (var target in targets)
@@ -33,9 +36,7 @@ public class ActivityService : IActivityService
             activity.UserActivities.Add(new UserActivity
             {
                 UserId = target.UserId,
-                Description = ActivityDescriptionBuilder.Build(
-                    activityEvent.DescriptionTemplate,
-                    placeholders),
+                
                 IsRead = false
             });
         }
