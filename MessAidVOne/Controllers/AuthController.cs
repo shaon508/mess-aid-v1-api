@@ -2,7 +2,6 @@ using System.Net;
 using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Domain.Entities;
 using MessAidVOne.Application.DTOs.Requests;
-using MessAidVOne.Application.Interfaces;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +14,14 @@ namespace MessAidVOne.Controllers
     {
 
         private readonly IAuthService _authService;
-        private readonly IActivityOutboxService _activityOutboxService;
         private readonly IJwtService _jwtService;
+        private readonly IActivityCustomRepository _activityCustomRepository;
 
-        public AuthController(IAuthService authService, IJwtService jwtService, IActivityOutboxService activityOutboxService)
+        public AuthController(IAuthService authService, IJwtService jwtService, IActivityCustomRepository activityCustomRepository)
         {
             _authService = authService;
             _jwtService = jwtService;
-            _activityOutboxService = activityOutboxService;
+            _activityCustomRepository = activityCustomRepository;
         }
 
         [HttpPost("verify-email")]
@@ -171,7 +170,7 @@ namespace MessAidVOne.Controllers
             var entityType = (string)result.MetaData["EntityType"];
             var targetUserIds = (List<long>)result.MetaData["TargetUserIds"];
 
-            await _activityOutboxService.EnqueueAsync(
+            await _activityCustomRepository.EnqueueActivityAsync(
                 activityEvent: activityEvent,
                 actorUserId: actorUserId,
                 entityId: entityId,

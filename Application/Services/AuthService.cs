@@ -3,7 +3,6 @@ using MassAidVOne.Domain.Entities;
 using MassAidVOne.Domain.Utilities;
 using MessAidVOne.Application.DTOs.Requests;
 using MessAidVOne.Application.DTOs.Responses;
-using MessAidVOne.Application.Interfaces;
 using static MassAidVOne.Domain.Entities.Enum;
 
 namespace MassAidVOne.Application.Services
@@ -13,19 +12,17 @@ namespace MassAidVOne.Application.Services
 
         public readonly IUnitOfWork _unitOfWork;
         private readonly IOtpService _otpService;
-        private readonly IActivityOutboxService _activityOutboxService;
         private readonly IPasswordManagerService _passwordManagerService;
         private readonly IRepository<OtpInformation> _otpInformationRepository;
         private readonly IRepository<UserInformation> _userInformationRepository;
 
-        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IActivityService activityService, IEmailService emailService, IPasswordManagerService passwordManagerService, IActivityOutboxService activityOutboxService)
+        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IEmailService emailService, IPasswordManagerService passwordManagerService)
         {
             _unitOfWork = unitOfWork;
             _otpService = otpService;
             _passwordManagerService = passwordManagerService;
             _otpInformationRepository = _unitOfWork.Repository<OtpInformation>();
             _userInformationRepository = _unitOfWork.Repository<UserInformation>();
-            _activityOutboxService = activityOutboxService;
         }
 
 

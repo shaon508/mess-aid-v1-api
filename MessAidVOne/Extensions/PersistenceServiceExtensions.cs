@@ -18,11 +18,15 @@ namespace MessAidVOne.API.Extensions
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
              services.AddDbContext<ActivityManagementContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(activityConnectionString)));
+                options.UseMySql(activityConnectionString, ServerVersion.AutoDetect(activityConnectionString)));
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<ICustomRepository, CustomRepository>();
+
+            services.AddScoped<IActivityCustomRepository, ActivityCustomRepository>();
 
             return services;
         }
