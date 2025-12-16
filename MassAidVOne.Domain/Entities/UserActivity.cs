@@ -6,8 +6,6 @@
 
     public bool IsRead { get; set; }
 
-    public string? Description { get; set; }
-
     public DateTime? ReadAt { get; set; }
 
     public virtual ActivityInformation Activity { get; set; } = null!;

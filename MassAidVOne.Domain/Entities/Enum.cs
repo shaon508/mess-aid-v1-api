@@ -2,6 +2,14 @@
 {
     public static class Enum
     {
+        public enum OutboxStatus
+        {
+            Pending = 0,
+            Processing = 1,
+            Completed = 2,
+            Failed = 3
+        }
+
         public static class UserType
         {
             public const string Admin = "Admin";
@@ -25,7 +33,6 @@
         public static class FileUploadPath
         {
             public const string User = "User";
-
         }
     }
 }

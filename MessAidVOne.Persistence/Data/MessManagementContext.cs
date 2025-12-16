@@ -1,4 +1,5 @@
-﻿using MessAidVOne.Persistence.Model;
+﻿using MassAidVOne.Domain.Entities;
+using MessAidVOne.Persistence.Model;
 using Microsoft.EntityFrameworkCore;
 
 public partial class MessManagementContext : DbContext
@@ -18,9 +19,6 @@ public partial class MessManagementContext : DbContext
 
     public virtual DbSet<UserInformation> UserInformations { get; set; }
 
-    public virtual DbSet<ActivityInformation> ActivityInformations { get; set; }
-
-    public virtual DbSet<UserActivity> UserActivities { get; set; }
    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,80 +123,6 @@ public partial class MessManagementContext : DbContext
             entity.Property(e => e.UserType)
                 .HasMaxLength(20)
                 .HasColumnName("user_type");
-        });
-
-
-        modelBuilder.Entity<ActivityInformation>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("activity_information");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ActorUserId).HasColumnName("actor_user_id");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.CreatedOn)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp")
-                .HasColumnName("created_on");
-            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
-            entity.Property(e => e.DeletedOn)
-                .HasColumnType("datetime")
-                .HasColumnName("deleted_on");
-            entity.Property(e => e.EntityId).HasColumnName("entity_id");
-            entity.Property(e => e.EntityType)
-                .HasMaxLength(30)
-                .HasColumnName("entity_type");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("is_deleted");
-            entity.Property(e => e.ModifiedBy).HasColumnName("modified_by");
-            entity.Property(e => e.ModifiedOn)
-                .HasColumnType("datetime")
-                .HasColumnName("modified_on");
-        });
-
-        modelBuilder.Entity<UserActivity>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("user_activity");
-
-            entity.HasIndex(e => e.UserId, "fk_user_activity_user");
-
-            entity.HasIndex(e => new { e.ActivityId, e.UserId }, "uq_user_activity").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ActivityId).HasColumnName("activity_id");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.CreatedOn)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp")
-                .HasColumnName("created_on");
-            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
-            entity.Property(e => e.DeletedOn)
-                .HasColumnType("datetime")
-                .HasColumnName("deleted_on");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("is_deleted");
-            entity.Property(e => e.IsRead).HasColumnName("is_read");
-            entity.Property(e => e.ModifiedBy).HasColumnName("modified_by");
-            entity.Property(e => e.ModifiedOn)
-                .HasColumnType("datetime")
-                .HasColumnName("modified_on");
-            entity.Property(e => e.ReadAt)
-                .HasColumnType("datetime")
-                .HasColumnName("read_at");
-            entity.Property(e => e.Description)
-                .HasMaxLength(200)
-                .HasColumnName("description");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.Activity).WithMany(p => p.UserActivities)
-                .HasForeignKey(d => d.ActivityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_user_activity_activity");
         });
 
         OnModelCreatingPartial(modelBuilder);

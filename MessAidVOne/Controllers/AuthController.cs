@@ -1,5 +1,7 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
+using MassAidVOne.Domain.Entities;
+using MessAidVOne.Application.DTOs.Requests;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +15,13 @@ namespace MessAidVOne.Controllers
 
         private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
+        private readonly IActivityCustomRepository _activityCustomRepository;
 
-        public AuthController(IAuthService authService, IJwtService jwtService)
+        public AuthController(IAuthService authService, IJwtService jwtService, IActivityCustomRepository activityCustomRepository)
         {
             _authService = authService;
             _jwtService = jwtService;
+            _activityCustomRepository = activityCustomRepository;
         }
 
         [HttpPost("verify-email")]
@@ -159,6 +163,21 @@ namespace MessAidVOne.Controllers
                     Data = null
                 });
             }
+
+            var activityEvent = (ActivityEvent)result.MetaData["ActivityEvent"];
+            var actorUserId = (long)result.MetaData["ActorUserId"];
+            var entityId = (long)result.MetaData["EntityId"];
+            var entityType = (string)result.MetaData["EntityType"];
+            var targetUserIds = (List<long>)result.MetaData["TargetUserIds"];
+
+            await _activityCustomRepository.EnqueueActivityAsync(
+                activityEvent: activityEvent,
+                actorUserId: actorUserId,
+                entityId: entityId,
+                entityType: entityType,
+                targetUserIds: targetUserIds,
+                placeholders: null
+            );
 
             return Ok(new ApiResponse<object>
             {

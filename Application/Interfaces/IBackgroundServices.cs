@@ -3,5 +3,6 @@
     public interface IBackgroundServices
     {
         Task DoDeleteUsedOrUnUsedOtp();
+        Task DoProcessActivityOutboxAsync();
     }
 }

@@ -14,5 +14,6 @@ namespace MassAidVOne.Application.Interfaces
         Task SoftDeleteRangeAsync(Expression<Func<T, bool>> predicate);
         Task UpdateRangeSelectedAsync(Expression<Func<T, bool>> predicate, Action<T> updateAction);
         Task UpdateRangeAsync(IEnumerable<T> entities);
+        Task<List<T>> GetBatchByConditionAsync(Expression<Func<T, bool>> expression, int? take = null);
     }
 }
