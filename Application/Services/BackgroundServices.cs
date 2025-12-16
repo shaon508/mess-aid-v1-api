@@ -9,16 +9,14 @@ namespace MassAidVOne.Application.Services
     public class BackgroundServices : IBackgroundServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IActivityService _activityService;
+        private readonly IActivityCustomRepository _activityCustomRepository;
         private readonly IRepository<OtpInformation> _otpInformationrepository;
-        private readonly IRepository<ActivityOutbox> _activityOutboxRepository;
 
-        public BackgroundServices(IUnitOfWork unitOfWork, IActivityService activityService)
+        public BackgroundServices(IUnitOfWork unitOfWork, IActivityCustomRepository activityCustomRepository)
         {
             _unitOfWork = unitOfWork;
-            _activityService = activityService;
             _otpInformationrepository = _unitOfWork.Repository<OtpInformation>();
-            _activityOutboxRepository = _unitOfWork.Repository<ActivityOutbox>();
+            _activityCustomRepository = activityCustomRepository;
         }
 
 
@@ -42,43 +40,11 @@ namespace MassAidVOne.Application.Services
         }
         #endregion
 
-        #region Activity outbox processing
+
+        #region Process Activity Outbox
         public async Task DoProcessActivityOutboxAsync()
         {
-            var activityOutboxService = await _activityOutboxRepository.GetBatchByConditionAsync(x => x.Status == (sbyte)OutboxStatus.Pending &&
-             x.ProcessingAttempts < 5, 50);
-
-            foreach (var outbox in activityOutboxService)
-            {
-                outbox.Status = (sbyte)OutboxStatus.Processing;
-                outbox.ProcessingAttempts++;
-                await _unitOfWork.SaveChangesAsync();
-
-                var payload = JsonSerializer
-                    .Deserialize<ActivityOutboxPayload>(outbox.PayloadJson)!;
-
-                var targets = payload.TargetUserIds
-                    .Select(id => new UserActivityDetails { UserId = id })
-                    .ToList();
-
-                var activityEvent = ActivityEvents.FromKey(outbox.EventKey);
-
-                await _activityService.CreateActivityAsync(
-                    activityEvent,
-                    outbox.ActorUserId,
-                    outbox.EntityId,
-                    targets,
-                    payload.Placeholders);
-
-                outbox.Status = (sbyte)OutboxStatus.Completed;
-                outbox.ProcessedAt = DateTime.UtcNow;
-
-            }
-            if (activityOutboxService.Any())
-            {
-                await _activityOutboxRepository.UpdateRangeAsync(activityOutboxService);
-            }
-            await _unitOfWork.SaveChangesAsync();
+            await _activityCustomRepository.ProcessActivityOutboxAsync();
         }
         #endregion
 

@@ -16,7 +16,7 @@ namespace MessAidVOne.API.Extensions
                              .UseRecommendedSerializerSettings()
                              .UseColouredConsoleLogProvider()
                              .UseStorage(new MySqlStorage(
-                                 config.GetConnectionString("DefaultConnection") + ";Allow User Variables=True;",
+                                 config.GetConnectionString("ActivityConnection") + ";Allow User Variables=True;",
                                  new MySqlStorageOptions
                                  {
                                      QueuePollInterval = TimeSpan.FromSeconds(15),
