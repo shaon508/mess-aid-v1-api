@@ -15,8 +15,4 @@
     <ProjectReference Include="..\MassAidVOne.Domain\MassAidVOne.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
-  </ItemGroup>
-
 </Project>

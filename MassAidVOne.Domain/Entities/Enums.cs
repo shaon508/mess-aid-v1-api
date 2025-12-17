@@ -1,6 +1,6 @@
 ﻿namespace MassAidVOne.Domain.Entities
 {
-    public static class Enum
+    public static class Enums
     {
         public enum OutboxStatus
         {

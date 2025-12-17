@@ -2,7 +2,7 @@
 using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Domain.Entities;
 using MessAidVOne.Application.DTOs;
-using static MassAidVOne.Domain.Entities.Enum;
+using static MassAidVOne.Domain.Entities.Enums;
 
 namespace MassAidVOne.Application.Services
 {

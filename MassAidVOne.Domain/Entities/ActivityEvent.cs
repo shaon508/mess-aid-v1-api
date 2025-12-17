@@ -18,13 +18,13 @@
 
         public static readonly ActivityEvent AddedMember = new(
             Key: "Added Member",
-            DescriptionTemplate: "#ActionUser added #TargetUser to #MessName",
+            DescriptionTemplate: "#ActionUserName added #TargetUserId to #MessName",
             Domain: EventDomain.Mess
         );
 
         public static readonly ActivityEvent CreatedMess = new(
             Key: "Created Mess",
-            DescriptionTemplate: "#ActionUser created #MessName",
+            DescriptionTemplate: "#ActionUserName created #MessName",
             Domain: EventDomain.Mess
         );
 
