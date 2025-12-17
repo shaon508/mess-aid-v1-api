@@ -35,7 +35,23 @@ namespace MassAidVOne.Domain.Utilities
                     return userTypeClaim;
                 }
 
-                return string.Empty; 
+                return string.Empty;
+            }
+        }
+
+
+        public static string UserName
+        {
+            get
+            {
+                var userTypeClaim = _httpContextAccessor?.HttpContext?.User?.FindFirst("UserName")?.Value;
+
+                if (!string.IsNullOrEmpty(userTypeClaim))
+                {
+                    return userTypeClaim;
+                }
+
+                return string.Empty;
             }
         }
 

@@ -5,7 +5,7 @@ using MessAidVOne.Application.DTOs;
 using MessAidVOne.Application.Utilities;
 using MessAidVOne.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
-using static MassAidVOne.Domain.Entities.Enum;
+using static MassAidVOne.Domain.Entities.Enums;
 
 public class ActivityCustomRepository : IActivityCustomRepository
 {

@@ -28,6 +28,7 @@ namespace MessAidVOne.Services
             new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(ClaimTypes.Role, role),
             new("UserType", user?.UserType.ToString()),
+            new("UserName", user?.Name.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));

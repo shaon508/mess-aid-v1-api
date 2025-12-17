@@ -3,7 +3,7 @@ using MassAidVOne.Domain.Entities;
 using MassAidVOne.Domain.Utilities;
 using MessAidVOne.Application.DTOs.Requests;
 using MessAidVOne.Application.DTOs.Responses;
-using static MassAidVOne.Domain.Entities.Enum;
+using static MassAidVOne.Domain.Entities.Enums;
 
 namespace MassAidVOne.Application.Services
 {
