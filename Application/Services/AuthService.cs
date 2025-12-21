@@ -216,7 +216,7 @@ namespace MassAidVOne.Application.Services
 
 
         #region User password set feature
-        private async Task<Result<bool>> SetUserPassword(UserInformation userInformation, string password)
+        public async Task<Result<bool>> SetUserPassword(UserInformation userInformation, string password)
         {
             if (userInformation == null || userInformation.IsDeleted == true || userInformation.IsActive == false)
             {

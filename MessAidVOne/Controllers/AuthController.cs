@@ -1,10 +1,13 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Domain.Entities;
+using MessAidVOne.Application.Abstructions;
 using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.Features.AuthManagement;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MessAidVOne.Controllers
 {
@@ -15,13 +18,15 @@ namespace MessAidVOne.Controllers
 
         private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
+        private readonly ICommandDispatcher _dispatcher;
         private readonly IActivityCustomRepository _activityCustomRepository;
 
-        public AuthController(IAuthService authService, IJwtService jwtService, IActivityCustomRepository activityCustomRepository)
+        public AuthController(IAuthService authService, IJwtService jwtService, IActivityCustomRepository activityCustomRepository, ICommandDispatcher dispatcher)
         {
             _authService = authService;
             _jwtService = jwtService;
             _activityCustomRepository = activityCustomRepository;
+            _dispatcher = dispatcher;
         }
 
         [HttpPost("verify-email")]
@@ -148,12 +153,41 @@ namespace MessAidVOne.Controllers
         //}
 
 
+        //[Authorize]
+        //[Authorize]
+        //[HttpPost("change-password")]
+        //public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        //{
+        //    var result = await _authService.ChangePassword(request);
+        //    if (!result.IsSuccess)
+        //    {
+        //        return BadRequest(new ApiResponse<string>
+        //        {
+        //            HttpStatusCode = HttpStatusCode.BadRequest,
+        //            Message = result.ErrorMessage,
+        //            Data = null
+        //        });
+        //    }
+
+        //    await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
+
+        //    return Ok(new ApiResponse<object>
+        //    {
+        //        HttpStatusCode = HttpStatusCode.OK,
+        //        Message = "Change password successful.",
+        //        Data = result.Data,
+        //    });
+        //}
+
+
+
         [Authorize]
         [Authorize]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand request)
         {
-            var result = await _authService.ChangePassword(request);
+            var result = await _dispatcher.Dispatch(request);
+
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>

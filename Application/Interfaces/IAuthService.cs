@@ -13,5 +13,6 @@ namespace MassAidVOne.Application.Interfaces
         Task<Result<LoginResponseDto?>> Login(LogInRequest request);
         Task<Result<bool>> Logout(CancellationToken cancellationToken);
         Task<Result<bool>> ChangePassword(ChangePasswordRequest request);
+        Task<Result<bool>> SetUserPassword(UserInformation userInformation, string password);
     }
 }

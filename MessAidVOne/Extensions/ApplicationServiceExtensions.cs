@@ -1,6 +1,9 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Application.Services;
 using MassAidVOne.Infrastructure.Services;
+using MessAidVOne.Application.Abstructions;
+using MessAidVOne.Application.Dispatcher;
+using MessAidVOne.Application.Features.AuthManagement;
 using MessAidVOne.Application.Services;
 using Microsoft.AspNetCore.Identity;
 
@@ -23,6 +26,13 @@ namespace MessAidVOne.API.Extensions
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IMessService, MessService>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+
+            services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+
+            services.AddScoped<ICommandHandler<ChangePasswordCommand, Result<bool>>,
+                              ChangePasswordCommandHandler>();
+
 
             return services;
         }
