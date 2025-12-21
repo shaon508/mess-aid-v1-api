@@ -18,9 +18,38 @@ public class ActivityCustomRepository : IActivityCustomRepository
         _unitOfWork = unitOfWork;
     }
 
+    #region Enqueue Activity From MetaData
+    public async Task EnqueueActivityFromMetaDataAsync(Dictionary<string, object> metaData)
+    {
+        if (metaData == null || !metaData.Any())
+            return;
+
+        var activityEvent = GetValue<ActivityEvent>(metaData, "ActivityEvent");
+        var actorUserId = GetValue<long>(metaData, "ActorUserId");
+        var entityId = GetValue<long>(metaData, "EntityId");
+        var entityType = GetValue<string>(metaData, "EntityType");
+        var targetUserIds = GetValue<List<long>>(metaData, "TargetUserIds") ?? new List<long>();
+        var placeholders = GetValue<Dictionary<string, string>>(metaData, "Placeholders")
+            ?? new Dictionary<string, string>();
+
+        if (activityEvent != null)
+        {
+            await EnqueueActivityAsync(
+                activityEvent,
+                actorUserId,
+                entityId,
+                entityType,
+                targetUserIds,
+                placeholders
+            );
+        }
+    }
+    #endregion
+
     #region Create Activity Outbox
-    public async Task EnqueueActivityAsync(ActivityEvent activityEvent, long actorUserId, long entityId, string entityType,
-    List<long> targetUserIds, Dictionary<string, string>? placeholders = null)
+    public async Task EnqueueActivityAsync(ActivityEvent activityEvent, long actorUserId,
+        long entityId, string entityType, List<long> targetUserIds,
+        Dictionary<string, string>? placeholders = null)
     {
         var payload = new ActivityOutboxPayload
         {
@@ -87,8 +116,8 @@ public class ActivityCustomRepository : IActivityCustomRepository
     #endregion
 
     #region Creating Activities
-    public async Task CreateActivityAsync(ActivityEvent activityEvent, long actorUserId, long entityId,
-    List<UserActivityDetails> targets, Dictionary<string, string>? placeholders)
+    public async Task CreateActivityAsync(ActivityEvent activityEvent, long actorUserId,
+        long entityId, List<UserActivityDetails> targets, Dictionary<string, string>? placeholders)
     {
         var activity = new ActivityInformation
         {
@@ -106,6 +135,18 @@ public class ActivityCustomRepository : IActivityCustomRepository
 
         await _context.ActivityInformations.AddAsync(activity);
         await _context.SaveChangesAsync();
+    }
+    #endregion
+   
+    #region Helper Methods
+    private static T GetValue<T>(Dictionary<string, object> metaData, string key)
+    {
+        if (metaData.TryGetValue(key, out var value) && value is T typedValue)
+        {
+            return typedValue;
+        }
+
+        return default(T);
     }
     #endregion
 }

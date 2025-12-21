@@ -10,5 +10,6 @@ namespace MassAidVOne.Application.Interfaces
 
         Task CreateActivityAsync(ActivityEvent activityEvent, long actorUserId, long entityId, List<UserActivityDetails> targets, Dictionary<string, string>? placeholders);
 
+        Task EnqueueActivityFromMetaDataAsync(Dictionary<string, object> metaData);
     }
 }

@@ -13,8 +13,13 @@
         public static class UserType
         {
             public const string Admin = "Admin";
-            public const string MessManager = "MessManager";
             public const string User = "User";
+        }
+        
+        public static class MemberType
+        {
+            public const string MessManager = "MessManager";
+            public const string Member = "Member";
         }
 
         public static class OtpActivityType

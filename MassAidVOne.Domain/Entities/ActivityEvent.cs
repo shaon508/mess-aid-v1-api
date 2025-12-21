@@ -28,18 +28,26 @@
             Domain: EventDomain.Mess
         );
 
+        public static readonly ActivityEvent ModifyMess = new(
+            Key: "Modified Mess",
+            DescriptionTemplate: "#MessName Modified by #ActionUserName",
+            Domain: EventDomain.Mess
+        );
+
 
         private static readonly Dictionary<string, ActivityEvent> _map =
         new()
         {
             [ChangedPassword.Key] = ChangedPassword,
             [AddedMember.Key] = AddedMember,
-            [CreatedMess.Key] = CreatedMess
+            [CreatedMess.Key] = CreatedMess,
+            [ModifyMess.Key] = ModifyMess
         };
 
         public static ActivityEvent FromKey(string key)
             => _map.TryGetValue(key, out var ev)
                 ? ev
                 : throw new InvalidOperationException($"Unknown activity event: {key}");
+
     }
 }

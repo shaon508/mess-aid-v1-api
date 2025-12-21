@@ -10,11 +10,15 @@ namespace MessAidVOne.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<MessInformation> _messRepository;
+        private readonly IRepository<MemberInformation> _memberInformationRepository;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public MessService(IUnitOfWork unitOfWork)
+        public MessService(IUnitOfWork unitOfWork, ICloudinaryService cloudinaryService)
         {
             _unitOfWork = unitOfWork;
             _messRepository = _unitOfWork.Repository<MessInformation>();
+            _memberInformationRepository = _unitOfWork.Repository<MemberInformation>();
+            _cloudinaryService = cloudinaryService;
         }
 
         #region Add Mess Information
@@ -23,12 +27,14 @@ namespace MessAidVOne.Application.Services
             var photoUrl = string.Empty;
             if (request.Photo != null)
             {
-                var uploadResult = await ImageUploadUtilities.UploadImageAsync(request.Photo, FileUploadPath.User);
-                if (!uploadResult.IsSuccess)
+                try
                 {
-                    return Result<MessInformationResponseDto>.Failure(uploadResult.Message);
+                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
                 }
-                photoUrl = uploadResult.Data!;
+                catch (Exception ex)
+                {
+                    return Result<MessInformationResponseDto>.Failure(ex.Message);
+                }
             }
 
             var messInfo = new MessInformation
@@ -82,12 +88,14 @@ namespace MessAidVOne.Application.Services
 
             if (request.Photo != null)
             {
-                var uploadResult = await ImageUploadUtilities.UploadImageAsync(request.Photo, FileUploadPath.User);
-                if (!uploadResult.IsSuccess)
+                try
                 {
-                    return Result<MessInformationResponseDto>.Failure(uploadResult.Message);
+                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
                 }
-                photoUrl = uploadResult.Data!;
+                catch (Exception ex)
+                {
+                    return Result<MessInformationResponseDto>.Failure(ex.Message);
+                }
             }
 
             messInfo.Name = request.Name;
@@ -97,13 +105,30 @@ namespace MessAidVOne.Application.Services
             await _messRepository.UpdateAsync(messInfo);
             await _unitOfWork.SaveChangesAsync();
 
+            #region Activity Information
+            var metadata = new Dictionary<string, object>
+            {
+                { "ActorUserId", AppUserContext.UserId },
+                { "EntityId", messInfo.Id },
+                { "EntityType", nameof(MessInformation) },
+                { "TargetUserIds", new List<long> { AppUserContext.UserId } },
+                { "ActivityEvent", ActivityEvents.ModifyMess },
+                { "Placeholders", new Dictionary<string, string>
+                    {
+                        { "#MessName", messInfo.Name },
+                        { "#ActionUserName", AppUserContext.UserName.ToString() }
+                    }
+                }
+            };
+            #endregion
+
             return Result<MessInformationResponseDto>.Success(new MessInformationResponseDto
             {
                 Name = messInfo.Name,
                 Address = messInfo.Address,
                 PhotoUrl = photoUrl,
                 IsActive = messInfo.IsActive
-            });
+            }, metaData: metadata);
         }
         #endregion
     }

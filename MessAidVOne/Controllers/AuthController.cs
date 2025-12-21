@@ -164,20 +164,7 @@ namespace MessAidVOne.Controllers
                 });
             }
 
-            var activityEvent = (ActivityEvent)result.MetaData["ActivityEvent"];
-            var actorUserId = (long)result.MetaData["ActorUserId"];
-            var entityId = (long)result.MetaData["EntityId"];
-            var entityType = (string)result.MetaData["EntityType"];
-            var targetUserIds = (List<long>)result.MetaData["TargetUserIds"];
-
-            await _activityCustomRepository.EnqueueActivityAsync(
-                activityEvent: activityEvent,
-                actorUserId: actorUserId,
-                entityId: entityId,
-                entityType: entityType,
-                targetUserIds: targetUserIds,
-                placeholders: null
-            );
+            await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
 
             return Ok(new ApiResponse<object>
             {

@@ -3,6 +3,7 @@ using CloudinaryDotNet;
 using MassAidVOne.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using MassAidVOne.Application.Interfaces;
 
 namespace MassAidVOne.Infrastructure.Services
 {

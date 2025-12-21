@@ -24,7 +24,7 @@ namespace MessAidVOne.Controllers
 
         [HttpPost("mess")]
         [ProducesResponseType(typeof(ApiResponse<MessInformationResponseDto>), 200)]
-        public async Task<IActionResult> Register([FromForm] AddMessRequest request)
+        public async Task<IActionResult> CraeteMessAsync([FromForm] AddMessRequest request)
         {
             var result = await _messService.AddMessAsync(request);
             if (!result.IsSuccess)
@@ -37,21 +37,7 @@ namespace MessAidVOne.Controllers
                 });
             }
 
-            var activityEvent = (ActivityEvent)result.MetaData["ActivityEvent"];
-            var actorUserId = (long)result.MetaData["ActorUserId"];
-            var entityId = (long)result.MetaData["EntityId"];
-            var entityType = (string)result.MetaData["EntityType"];
-            var targetUserIds = (List<long>)result.MetaData["TargetUserIds"];
-            var placeholders = (Dictionary<string, string>)result.MetaData["Placeholders"];
-
-            await _activityCustomRepository.EnqueueActivityAsync(
-                activityEvent: activityEvent,
-                actorUserId: actorUserId,
-                entityId: entityId,
-                entityType: entityType,
-                targetUserIds: targetUserIds,
-                placeholders: placeholders
-            );
+            await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
 
             return Ok(new ApiResponse<object>
             {
@@ -63,8 +49,7 @@ namespace MessAidVOne.Controllers
 
         [HttpPut("mess")]
         [ProducesResponseType(typeof(ApiResponse<MessInformationResponseDto>), 200)]
-        [Authorize]
-        public async Task<IActionResult> Register([FromForm] ModifyMessRequest request)
+        public async Task<IActionResult> EditMessAsync([FromForm] ModifyMessRequest request)
         {
             var result = await _messService.ModifyMessAsync(request);
             if (!result.IsSuccess)
@@ -76,13 +61,18 @@ namespace MessAidVOne.Controllers
                     Data = null
                 });
             }
+
+            await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
+
             return Ok(new ApiResponse<object>
             {
                 HttpStatusCode = HttpStatusCode.OK,
-                Message = "Mess info update successful.",
-                Data = result.Data
+                Message = "Mess info modify successful.",
+                Data = result.Data,
             });
         }
+
+
 
         //[HttpGet("user")]
         //[ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]

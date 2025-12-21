@@ -14,8 +14,6 @@ namespace MessAidVOne.API.Extensions
             services.Configure<CloudinarySettings>(
                 config.GetSection("Cloudinary"));
 
-            services.AddScoped<ICloudinaryService, CloudinaryService>();
-
             return services;
         }
     }

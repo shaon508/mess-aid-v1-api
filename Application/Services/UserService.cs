@@ -58,7 +58,7 @@ namespace MassAidVOne.Application.Services
                 Name = request.Name,
                 Email = request.Email,
                 Address = request.Address,
-                UserType = UserType.MessManager,
+                UserType = UserType.User,
                 PhotoUrl = photUrl,
                 UserPassword = hashedPassword,
                 IsActive = true,

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace MassAidVOne.Infrastructure.Services
+namespace MassAidVOne.Application.Interfaces
 {
     public interface ICloudinaryService
     {

@@ -1,5 +1,6 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Application.Services;
+using MassAidVOne.Infrastructure.Services;
 using MessAidVOne.Application.Services;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,6 +22,7 @@ namespace MessAidVOne.API.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IMessService, MessService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             return services;
         }
