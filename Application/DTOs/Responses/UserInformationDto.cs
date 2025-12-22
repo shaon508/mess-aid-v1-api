@@ -1,4 +1,4 @@
-﻿public class UserInformationResponseDto
+﻿public class UserInformationDto
 {
     public long Id { get; set; }
 

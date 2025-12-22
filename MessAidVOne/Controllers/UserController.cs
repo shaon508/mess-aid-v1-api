@@ -19,7 +19,7 @@ namespace MessAidVOne.Controllers
 
 
         [HttpPost("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
         public async Task<IActionResult> Register([FromForm] AddUserRequest request)
         {
             var result = await _userService.AddUserAsync(request);
@@ -41,7 +41,7 @@ namespace MessAidVOne.Controllers
         }
 
         [HttpPut("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
         [Authorize]
         public async Task<IActionResult> Register([FromForm] ModifyUserRequest request)
         {
@@ -64,7 +64,7 @@ namespace MessAidVOne.Controllers
         }
 
         [HttpGet("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
         [Authorize]
         public async Task<IActionResult> GetUserInfoByUser()
         {

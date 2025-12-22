@@ -22,25 +22,13 @@ namespace MessAidVOne.Application.Features.AuthManagement
 
         public async Task<Result<bool>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var userInfo = await _userInformationRepository.GetByIdAsync(AppUserContext.UserId);
-            if (userInfo == null || userInfo.IsDeleted == true || userInfo.IsActive == false)
+            var (IsValid, Message, User) = await ValidateChangePasswordRequest(request);
+            if (!IsValid || User == null)
             {
-                return Result<bool>.Failure("Invalid user.");
+                return Result<bool>.Failure(Message);
             }
 
-
-            bool isPasswordValid = _passwordManagerService.VerifyPassword(userInfo, request.OldPassword);
-            if (!isPasswordValid)
-            {
-                return Result<bool>.Failure("Invalid password.");
-            }
-            bool isOldAndNewPasswordSame = _passwordManagerService.VerifyPassword(userInfo, request.NewPassword);
-            if (isOldAndNewPasswordSame)
-            {
-                return Result<bool>.Failure("Your new password can't match with old password.");
-            }
-
-            var updatedPassword = await _authService.SetUserPassword(userInfo, request.NewPassword);
+            var updatedPassword = await _authService.SetUserPassword(User, request.NewPassword);
             if (!updatedPassword.IsSuccess)
             {
                 return Result<bool>.Failure("Failed to update password.");
@@ -49,15 +37,43 @@ namespace MessAidVOne.Application.Features.AuthManagement
             #region Activity Information
             var metadata = new Dictionary<string, object>
             {
-                { "ActorUserId", userInfo.Id },
-                { "EntityId", userInfo.Id },
+                { "ActorUserId", User.Id },
+                { "EntityId", User.Id },
                 { "EntityType", nameof(UserInformation) },
-                { "TargetUserIds", new List<long> { userInfo.Id } },
+                { "TargetUserIds", new List<long> { User.Id } },
                 { "ActivityEvent", ActivityEvents.ChangedPassword }
             };
             #endregion
 
             return Result<bool>.Success(true, metadata);
+        }
+
+        private async Task<(bool, string, UserInformation?)> ValidateChangePasswordRequest(ChangePasswordCommand request)
+        {
+            if (request == null)
+            {
+                return (false, "Invalid information.", null);
+            }
+
+            var userInfo = await _userInformationRepository.GetByIdAsync(AppUserContext.UserId);
+            if (userInfo == null || userInfo.IsDeleted == true || userInfo.IsActive == false)
+            {
+                return (false, "Invalid user.", null);
+            }
+
+            bool isPasswordValid = _passwordManagerService.VerifyPassword(userInfo, request.OldPassword);
+            if (!isPasswordValid)
+            {
+                return (false, "Invalid password.", null);
+            }
+
+            bool isOldAndNewPasswordSame = _passwordManagerService.VerifyPassword(userInfo, request.NewPassword);
+            if (isOldAndNewPasswordSame)
+            {
+                return (false, "Your new password can't match with old password.", null);
+            }
+
+            return (true, "Ok", userInfo);
         }
     }
 }

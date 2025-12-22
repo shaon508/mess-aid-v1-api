@@ -4,8 +4,8 @@ namespace MassAidVOne.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<Result<UserInformationResponseDto>> GetUserInfoByUserAsync();
-        public Task<Result<UserInformationResponseDto>> AddUserAsync(AddUserRequest user);
-        Task<Result<UserInformationResponseDto>> ModifyUserAsync(ModifyUserRequest request);
+        Task<Result<UserInformationDto>> GetUserInfoByUserAsync();
+        public Task<Result<UserInformationDto>> AddUserAsync(AddUserRequest user);
+        Task<Result<UserInformationDto>> ModifyUserAsync(ModifyUserRequest request);
     }
 }

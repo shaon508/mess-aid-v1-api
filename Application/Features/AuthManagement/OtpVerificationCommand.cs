@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MessAidVOne.Application.DTOs.Requests
+namespace MessAidVOne.Application.Features.AuthManagement
 {
-    public class OtpVerificationRequest
+    public class OtpVerificationCommand
     {
         [Required(ErrorMessage = "Otp id is required.")]
         [Range(1, long.MaxValue, ErrorMessage = "Otp id must be a positive number.")]

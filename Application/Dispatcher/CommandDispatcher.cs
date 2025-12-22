@@ -1,5 +1,4 @@
 ﻿using MessAidVOne.Application.Abstructions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MessAidVOne.Application.Dispatcher
 {

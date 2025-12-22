@@ -30,8 +30,8 @@ namespace MessAidVOne.API.Extensions
 
             services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 
-            services.AddScoped<ICommandHandler<ChangePasswordCommand, Result<bool>>,
-                              ChangePasswordCommandHandler>();
+            //services.AddScoped<ICommandHandler<ChangePasswordCommand, Result<bool>>,
+            //                  ChangePasswordCommandHandler>();
 
 
             return services;

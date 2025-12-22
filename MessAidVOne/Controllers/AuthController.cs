@@ -1,13 +1,10 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
-using MassAidVOne.Domain.Entities;
 using MessAidVOne.Application.Abstructions;
-using MessAidVOne.Application.DTOs.Requests;
 using MessAidVOne.Application.Features.AuthManagement;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MessAidVOne.Controllers
 {
@@ -16,23 +13,22 @@ namespace MessAidVOne.Controllers
     public class AuthController : ControllerBase
     {
 
-        private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
         private readonly ICommandDispatcher _dispatcher;
         private readonly IActivityCustomRepository _activityCustomRepository;
 
-        public AuthController(IAuthService authService, IJwtService jwtService, IActivityCustomRepository activityCustomRepository, ICommandDispatcher dispatcher)
+        public AuthController(IJwtService jwtService, IActivityCustomRepository activityCustomRepository, ICommandDispatcher dispatcher)
         {
-            _authService = authService;
             _jwtService = jwtService;
             _activityCustomRepository = activityCustomRepository;
             _dispatcher = dispatcher;
         }
 
         [HttpPost("verify-email")]
-        public async Task<ActionResult> VerifyEmail(EmailVerificationRequest request)
+        public async Task<ActionResult> VerifyEmail(VerifyEmailCommand command)
         {
-            var result = await _authService.VerifyEmail(request);
+            var result = await _dispatcher.Dispatch(command);
+
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -53,31 +49,34 @@ namespace MessAidVOne.Controllers
 
         }
 
-        [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOtp(OtpVerificationRequest request)
-        {
-            var result = await _authService.VerifyOtp(request);
-            if (!result.IsSuccess)
-            {
-                return BadRequest(new ApiResponse<string>
-                {
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Message = result.ErrorMessage,
-                    Data = null
-                });
-            }
-            return Ok(new ApiResponse<object>
-            {
-                HttpStatusCode = HttpStatusCode.OK,
-                Message = "OTP verification successful.",
-                Data = result.Data
-            });
-        }
+        //[HttpPost("verify-otp")]
+        //public async Task<IActionResult> VerifyOtp(OtpVerificationCommand command)
+        //{
+        //    var result = await _dispatcher.Dispatch(command);
+
+        //    if (!result.IsSuccess)
+        //    {
+        //        return BadRequest(new ApiResponse<string>
+        //        {
+        //            HttpStatusCode = HttpStatusCode.BadRequest,
+        //            Message = result.ErrorMessage,
+        //            Data = null
+        //        });
+        //    }
+        //    return Ok(new ApiResponse<object>
+        //    {
+        //        HttpStatusCode = HttpStatusCode.OK,
+        //        Message = "OTP verification successful.",
+        //        Data = result.Data
+        //    });
+        //}
+
 
         [HttpPost("forget-password")]
-        public async Task<IActionResult> ForgetPassword(ForgetPasswordRequest request)
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordCommand command)
         {
-            var result = await _authService.ForgetPassword(request);
+
+            var result = await _dispatcher.Dispatch(command);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -98,9 +97,9 @@ namespace MessAidVOne.Controllers
 
 
         [HttpPost("log-in")]
-        public async Task<IActionResult> Login(LogInRequest request)
+        public async Task<IActionResult> Login(LogInCommand command)
         {
-            var result = await _authService.Login(request);
+            var result = await _dispatcher.Dispatch(command);
 
             if (!result.IsSuccess)
             {
@@ -153,35 +152,6 @@ namespace MessAidVOne.Controllers
         //}
 
 
-        //[Authorize]
-        //[Authorize]
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
-        //{
-        //    var result = await _authService.ChangePassword(request);
-        //    if (!result.IsSuccess)
-        //    {
-        //        return BadRequest(new ApiResponse<string>
-        //        {
-        //            HttpStatusCode = HttpStatusCode.BadRequest,
-        //            Message = result.ErrorMessage,
-        //            Data = null
-        //        });
-        //    }
-
-        //    await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
-
-        //    return Ok(new ApiResponse<object>
-        //    {
-        //        HttpStatusCode = HttpStatusCode.OK,
-        //        Message = "Change password successful.",
-        //        Data = result.Data,
-        //    });
-        //}
-
-
-
-        [Authorize]
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordCommand request)

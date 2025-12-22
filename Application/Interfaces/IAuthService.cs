@@ -1,18 +1,10 @@
-﻿using MessAidVOne.Application.DTOs.Requests;
-using MessAidVOne.Application.DTOs.Responses;
+﻿using MessAidVOne.Application.Features.AuthManagement;
 
 namespace MassAidVOne.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<OtpInformationResponseDto>> VerifyEmail(EmailVerificationRequest request);
-        Task<Result<bool>> VerifyOtp(OtpVerificationRequest request);
-        Task<Result<bool>> ForgetPassword(ForgetPasswordRequest request);
-
-
-        Task<Result<LoginResponseDto?>> Login(LogInRequest request);
-        Task<Result<bool>> Logout(CancellationToken cancellationToken);
-        Task<Result<bool>> ChangePassword(ChangePasswordRequest request);
         Task<Result<bool>> SetUserPassword(UserInformation userInformation, string password);
+        Task<Result<bool>> VerifyOtp(OtpVerificationCommand request);
     }
 }

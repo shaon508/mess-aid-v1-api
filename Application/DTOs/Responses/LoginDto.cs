@@ -2,7 +2,7 @@
 
 namespace MessAidVOne.Application.DTOs.Responses
 {
-    public class LoginResponseDto
+    public class LoginDto
     {
         public string Token { get; set; }
         [JsonIgnore]

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MessAidVOne.Application.Features.AuthManagement;
+using MessAidVOne.Application.Abstructions;
 
-namespace MessAidVOne.Application.DTOs.Requests
+namespace MessAidVOne.Application.Features.AuthManagement
 {
-    public class ForgetPasswordRequest : OtpVerificationCommand
+    public class ForgetPasswordCommand : OtpVerificationCommand, ICommand<Result<bool>>
     {
         [Required(ErrorMessage = "New password is required.")]
         [StringLength(50, ErrorMessage = "New password cannot exceed 50 characters.")]
