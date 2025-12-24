@@ -1,7 +1,7 @@
 ﻿namespace MessAidVOne.Application.Abstructions
 {
-    public interface IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
+    public interface IQueryHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>
     {
-        Task<TResult> Handle(TQuery query);
+        Task<TResponse> Handle(TQuery query, CancellationToken cancellationToken);
     }
 }

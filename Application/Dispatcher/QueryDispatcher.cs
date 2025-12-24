@@ -4,25 +4,25 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MessAidVOne.Application.Dispatcher
 {
-    public class CommandDispatcher : ICommandDispatcher
+    public class QueryDispatcher : IQueryDispatcher
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public CommandDispatcher(IServiceProvider serviceProvider)
+        public QueryDispatcher(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public async Task<TResult> Dispatch<TResult>(
-            ICommand<TResult> command,
+            IQuery<TResult> query,
             CancellationToken cancellationToken = default)
         {
-            var handlerType = typeof(ICommandHandler<,>)
-                .MakeGenericType(command.GetType(), typeof(TResult));
+            var handlerType = typeof(IQueryHandler<,>)
+                .MakeGenericType(query.GetType(), typeof(TResult));
 
             dynamic handler = _serviceProvider.GetRequiredService(handlerType);
 
-            return await handler.Handle((dynamic)command, cancellationToken);
+            return await handler.Handle((dynamic)query, cancellationToken);
         }
     }
 }

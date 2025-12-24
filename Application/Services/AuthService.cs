@@ -1,9 +1,7 @@
 ﻿using MassAidVOne.Application.Interfaces;
-using MassAidVOne.Domain.Entities;
-using MassAidVOne.Domain.Utilities;
-using MessAidVOne.Application.DTOs.Requests;
-using MessAidVOne.Application.DTOs.Responses;
-using MessAidVOne.Application.Features.AuthManagement;
+using MassAidVOne.Domain.Interfaces;
+using MessAidVOne.Application.Features.AuthManagement.Commands;
+using Microsoft.AspNetCore.Identity;
 using static MassAidVOne.Domain.Entities.Enums;
 
 namespace MassAidVOne.Application.Services
@@ -12,32 +10,31 @@ namespace MassAidVOne.Application.Services
     {
 
         public readonly IUnitOfWork _unitOfWork;
-        private readonly IPasswordManagerService _passwordManagerService;
+        private readonly IPasswordHasher<Object> _passwordHasher;
         private readonly IRepository<OtpInformation> _otpInformationRepository;
         private readonly IRepository<UserInformation> _userInformationRepository;
 
-        public AuthService(IUnitOfWork unitOfWork, IOtpService otpService, IEmailService emailService, IPasswordManagerService passwordManagerService)
+        public AuthService(IUnitOfWork unitOfWork, IPasswordHasher<object> passwordHasher = null)
         {
             _unitOfWork = unitOfWork;
-            _passwordManagerService = passwordManagerService;
+            _passwordHasher = passwordHasher;
             _otpInformationRepository = _unitOfWork.Repository<OtpInformation>();
             _userInformationRepository = _unitOfWork.Repository<UserInformation>();
         }
 
-
         #region Verify otp feature
-        public async Task<Result<bool>> VerifyOtp(OtpVerificationCommand request)
+        public async Task<bool> VerifyOtp(long otpId, int otpCode, string email)
         {
-            var otpInfo = await _otpInformationRepository.GetByIdAsync(request.OtpId);
+            var otpInfo = await _otpInformationRepository.GetByIdAsync(otpId);
             if (otpInfo == null || otpInfo.IsDeleted == true)
-                return Result<bool>.Failure("Invalid otp information.");
+                return false;
 
             bool isValid = true;
 
             otpInfo.Attempts = ++otpInfo.Attempts;
 
             if (otpInfo.Status != OtpStatus.Active)
-                return Result<bool>.Failure("Invalid otp information.");
+                return false;
 
             if (otpInfo.CreatedOn.AddMinutes(otpInfo.LifeTime ?? 0) < DateTime.UtcNow)
             {
@@ -45,7 +42,7 @@ namespace MassAidVOne.Application.Services
                 isValid = false;
             }
 
-            if (otpInfo.OtpCode != request.OtpCode || otpInfo.Email != request.Email)
+            if (otpInfo.OtpCode != otpCode || otpInfo.Email != email)
                 isValid = false;
 
             if (isValid)
@@ -54,11 +51,11 @@ namespace MassAidVOne.Application.Services
 
                 await _otpInformationRepository.UpdateAsync(otpInfo);
                 await _unitOfWork.SaveChangesAsync();
-                return Result<bool>.Success(true);
+                return true;
             }
             else
             {
-                return Result<bool>.Failure("Otp information is invalid.");
+                return false;
             }
         }
         #endregion
@@ -72,7 +69,7 @@ namespace MassAidVOne.Application.Services
                 return Result<bool>.Failure("Invalid user.");
             }
 
-            userInformation.UserPassword = _passwordManagerService.HashedPassword(password);
+            userInformation.UserPassword = await HashedPassword(password);
 
             await _userInformationRepository.UpdateAsync(userInformation);
             await _unitOfWork.SaveChangesAsync();
@@ -82,6 +79,24 @@ namespace MassAidVOne.Application.Services
         }
         #endregion
 
+
+        #region Password Hasher
+        public async Task<string> HashedPassword(string Password)
+        {
+            var hashedPassword = _passwordHasher.HashPassword(null, Password);
+            return hashedPassword;
+        }
+        #endregion
+
+
+        #region Verify Password
+        public async Task<bool> VerifyPassword(UserInformation User, string EnteredPassword)
+        {
+            var result = _passwordHasher.VerifyHashedPassword(null, User.UserPassword, EnteredPassword);
+
+            return result == PasswordVerificationResult.Success;
+        }
+        #endregion
 
     }
 }

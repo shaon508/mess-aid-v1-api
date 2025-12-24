@@ -1,7 +1,7 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
 using MessAidVOne.Application.Abstructions;
-using MessAidVOne.Application.Features.AuthManagement;
+using MessAidVOne.Application.Features.AuthManagement.Commands;
 using MessAidVOne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
