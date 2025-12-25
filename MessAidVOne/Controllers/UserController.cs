@@ -1,6 +1,7 @@
 using System.Net;
-using MassAidVOne.Application.Interfaces;
-using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.Abstructions;
+using MessAidVOne.Application.Features.UserManagement.Commands;
+using MessAidVOne.Application.Features.UserManagement.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,19 +11,20 @@ namespace MessAidVOne.Controllers
     [Route("api")]
     public class UserController : ControllerBase
     {
+        private readonly ICommandDispatcher _commandDispatcher;
+        private readonly IQueryDispatcher _queryDispatcher;
 
-        private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        public UserController(ICommandDispatcher dispatcher, IQueryDispatcher queryDispatcher)
         {
-            _userService = userService;
+            _commandDispatcher = dispatcher;
+            _queryDispatcher = queryDispatcher;
         }
 
-
         [HttpPost("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
-        public async Task<IActionResult> Register([FromForm] AddUserRequest request)
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
+        public async Task<IActionResult> Register([FromForm] CreatUserCommand command)
         {
-            var result = await _userService.AddUserAsync(request);
+            var result = await _commandDispatcher.Dispatch(command);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -40,12 +42,13 @@ namespace MessAidVOne.Controllers
             });
         }
 
+
         [HttpPut("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
         [Authorize]
-        public async Task<IActionResult> Register([FromForm] ModifyUserRequest request)
+        public async Task<IActionResult> Register([FromForm] ModifyUserCommand command)
         {
-            var result = await _userService.ModifyUserAsync(request);
+            var result = await _commandDispatcher.Dispatch(command);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -63,12 +66,13 @@ namespace MessAidVOne.Controllers
             });
         }
 
+
         [HttpGet("user")]
-        [ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<UserInformationDto>), 200)]
         [Authorize]
-        public async Task<IActionResult> GetUserInfoByUser()
+        public async Task<IActionResult> GetUserInfoByUser([FromQuery] GetUserQuery query)
         {
-            var result = await _userService.GetUserInfoByUserAsync();
+            var result = await _queryDispatcher.Dispatch(query);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>

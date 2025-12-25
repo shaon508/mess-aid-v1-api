@@ -1,7 +1,7 @@
 using System.Net;
 using MassAidVOne.Application.Interfaces;
-using MassAidVOne.Domain.Entities;
-using MessAidVOne.Application.DTOs.Requests;
+using MessAidVOne.Application.Abstructions;
+using MessAidVOne.Application.Features.MessManagement.Commands;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,21 +12,20 @@ namespace MessAidVOne.Controllers
     [Authorize]
     public class MessController : ControllerBase
     {
-
-        private readonly IMessService _messService;
+        private readonly ICommandDispatcher _dispatcher;
         private readonly IActivityCustomRepository _activityCustomRepository;
-        public MessController(IMessService messService, IActivityCustomRepository activityCustomRepository)
+        public MessController(ICommandDispatcher dispatcher, IActivityCustomRepository activityCustomRepository)
         {
-            _messService = messService;
+            _dispatcher = dispatcher;
             _activityCustomRepository = activityCustomRepository;
         }
 
 
         [HttpPost("mess")]
-        [ProducesResponseType(typeof(ApiResponse<MessInformationResponseDto>), 200)]
-        public async Task<IActionResult> CraeteMessAsync([FromForm] AddMessRequest request)
+        [ProducesResponseType(typeof(ApiResponse<MessInformationDto>), 200)]
+        public async Task<IActionResult> CreateMessAsync([FromForm] CreatMessCommand command)
         {
-            var result = await _messService.AddMessAsync(request);
+            var result = await _dispatcher.Dispatch(command);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -48,10 +47,10 @@ namespace MessAidVOne.Controllers
         }
 
         [HttpPut("mess")]
-        [ProducesResponseType(typeof(ApiResponse<MessInformationResponseDto>), 200)]
-        public async Task<IActionResult> EditMessAsync([FromForm] ModifyMessRequest request)
+        [ProducesResponseType(typeof(ApiResponse<MessInformationDto>), 200)]
+        public async Task<IActionResult> EditMessAsync([FromForm] ModifyMessCommand command)
         {
-            var result = await _messService.ModifyMessAsync(request);
+            var result = await _dispatcher.Dispatch(command);
             if (!result.IsSuccess)
             {
                 return BadRequest(new ApiResponse<string>
@@ -71,31 +70,6 @@ namespace MessAidVOne.Controllers
                 Data = result.Data,
             });
         }
-
-
-
-        //[HttpGet("user")]
-        //[ProducesResponseType(typeof(ApiResponse<UserInformationResponseDto>), 200)]
-        //[Authorize]
-        //public async Task<IActionResult> GetUserInfoByUser()
-        //{
-        //    var result = await _userService.GetUserInfoByUserAsync();
-        //    if (!result.IsSuccess)
-        //    {
-        //        return BadRequest(new ApiResponse<string>
-        //        {
-        //            HttpStatusCode = HttpStatusCode.BadRequest,
-        //            Message = result.ErrorMessage,
-        //            Data = null
-        //        });
-        //    }
-        //    return Ok(new ApiResponse<object>
-        //    {
-        //        HttpStatusCode = HttpStatusCode.OK,
-        //        Message = "User information retrieved successfully.",
-        //        Data = result.Data
-        //    });
-        //}
 
     }
 }

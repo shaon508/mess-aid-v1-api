@@ -1,4 +1,4 @@
-using Hangfire;
+﻿using Hangfire;
 using MessAidVOne.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,10 @@ builder.AddAuthenticationServices();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddHangfireServices(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
+
+
+var tempProvider = builder.Services.BuildServiceProvider();
+
 
 var app = builder.Build();
 

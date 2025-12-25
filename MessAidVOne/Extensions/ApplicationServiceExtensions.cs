@@ -1,7 +1,10 @@
 ﻿using MassAidVOne.Application.Interfaces;
 using MassAidVOne.Application.Services;
+using MassAidVOne.Domain.Interfaces;
 using MassAidVOne.Infrastructure.Services;
-using MessAidVOne.Application.Services;
+using MessAidVOne.Application.Abstructions;
+using MessAidVOne.Application.Dispatcher;
+using MessAidVOne.Application.Extensions;
 using Microsoft.AspNetCore.Identity;
 
 namespace MessAidVOne.API.Extensions
@@ -16,13 +19,16 @@ namespace MessAidVOne.API.Extensions
                 configuration.GetSection("EmailSettings"));
 
             services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
-            services.AddScoped<IPasswordManagerService, PasswordManagerService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOtpService, OtpService>();
-            services.AddScoped<IMessService, MessService>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+
+            services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+            services.AddScoped<IQueryDispatcher, QueryDispatcher>();
+
+            services.AddCqrsHandlers();
 
             return services;
         }
