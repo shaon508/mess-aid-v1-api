@@ -27,14 +27,12 @@ namespace MessAidVOne.Application.Features.UserManagement.Commands
             var photoUrl = request.IsPhotoRemove ? string.Empty : User!.PhotoUrl;
             if (request.Photo != null)
             {
-                try
+                var (IsSuccess, UploadMessage, PhotoUrl) = await _cloudinaryService.UploadImageAsync(request.Photo);
+                if (!IsSuccess)
                 {
-                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
+                    return Result<UserInformationDto>.Failure(UploadMessage);
                 }
-                catch (Exception ex)
-                {
-                    return Result<UserInformationDto>.Failure(ex.Message);
-                }
+                photoUrl = PhotoUrl!;
             }
 
             User!.Name = request.Name;
@@ -70,7 +68,6 @@ namespace MessAidVOne.Application.Features.UserManagement.Commands
             {
                 return (false, "User not found.", null);
             }
-
 
             return (true, "Ok", userInfo);
         }

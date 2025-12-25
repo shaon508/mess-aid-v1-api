@@ -34,14 +34,12 @@ namespace MessAidVOne.Application.Features.UserManagement.Commands
             var photoUrl = string.Empty;
             if (request.Photo != null)
             {
-                try
+                var (IsSuccess, UploadMessage, PhotoUrl) = await _cloudinaryService.UploadImageAsync(request.Photo);
+                if (!IsSuccess)
                 {
-                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
+                    return Result<UserInformationDto>.Failure(UploadMessage);
                 }
-                catch (Exception ex)
-                {
-                    return Result<UserInformationDto>.Failure(ex.Message);
-                }
+                photoUrl = PhotoUrl!;
             }
 
             var hashedPassword = await _authService.HashedPassword(request.Password);

@@ -4,6 +4,6 @@ namespace MassAidVOne.Application.Interfaces
 {
     public interface ICloudinaryService
     {
-        Task<string> UploadImageAsync(IFormFile file);
+       Task<(bool IsSuccess, string Message, string? Data)> UploadImageAsync(IFormFile file);
     }
 }

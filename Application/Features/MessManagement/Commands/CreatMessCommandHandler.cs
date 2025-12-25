@@ -22,18 +22,20 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
         public async Task<Result<MessInformationDto>> Handle(CreatMessCommand request, CancellationToken cancellationToken)
         {
             var (IsValid, Message) = await ValidateCreatMessRequest(request);
+            if (!IsValid)
+            {
+                return Result<MessInformationDto>.Failure(Message);
+            }
 
             var photoUrl = string.Empty;
             if (request.Photo != null)
             {
-                try
+                var (IsSuccess, UploadMessage, PhotoUrl) = await _cloudinaryService.UploadImageAsync(request.Photo);
+                if (!IsSuccess)
                 {
-                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
+                    return Result<MessInformationDto>.Failure(UploadMessage);
                 }
-                catch (Exception ex)
-                {
-                    return Result<MessInformationDto>.Failure(ex.Message);
-                }
+                photoUrl = PhotoUrl!;
             }
 
             var messInfo = new MessInformation

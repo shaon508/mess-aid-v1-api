@@ -24,18 +24,15 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
             var (IsValid, Message, Mess) = await ValidateModifyMessRequest(request);
 
 
-            var photoUrl = request.IsPhotoRemove ? string.Empty : Mess.PhotoUrl;
-
+            var photoUrl = request.IsPhotoRemove ? string.Empty : Mess!.PhotoUrl;
             if (request.Photo != null)
             {
-                try
+                var (IsSuccess, UploadMessage, PhotoUrl) = await _cloudinaryService.UploadImageAsync(request.Photo);
+                if (!IsSuccess)
                 {
-                    photoUrl = await _cloudinaryService.UploadImageAsync(request.Photo);
+                    return Result<MessInformationDto>.Failure(UploadMessage);
                 }
-                catch (Exception ex)
-                {
-                    return Result<MessInformationDto>.Failure(ex.Message);
-                }
+                photoUrl = PhotoUrl!;
             }
 
             Mess!.Name = request.Name;
