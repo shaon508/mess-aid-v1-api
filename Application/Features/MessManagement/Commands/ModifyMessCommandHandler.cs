@@ -53,7 +53,7 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
                 { "Placeholders", new Dictionary<string, string>
                     {
                         { "#MessName", Mess.Name },
-                        { "#ActionUserName", AppUserContext.UserName.ToString() }
+                        { "#ActionUserId", AppUserContext.UserId.ToString() }
                     }
                 }
             };

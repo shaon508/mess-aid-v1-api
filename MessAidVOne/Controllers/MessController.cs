@@ -71,5 +71,34 @@ namespace MessAidVOne.Controllers
             });
         }
 
+
+
+
+        [HttpPost("mess-member")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
+        public async Task<IActionResult> AddMemberAsync([FromForm] AddMemberCommand command)
+        {
+            var result = await _dispatcher.Dispatch(command);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = result.ErrorMessage,
+                    Data = null
+                });
+            }
+
+            await _activityCustomRepository.EnqueueActivityFromMetaDataAsync(result.MetaData);
+
+            return Ok(new ApiResponse<object>
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Message = "Member added successful.",
+                Data = result.Data
+            });
+        }
+
+
     }
 }

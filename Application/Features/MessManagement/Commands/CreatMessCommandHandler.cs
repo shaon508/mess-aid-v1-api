@@ -2,6 +2,7 @@
 using MassAidVOne.Domain.Entities;
 using MassAidVOne.Domain.Utilities;
 using MessAidVOne.Application.Abstructions;
+using static MassAidVOne.Domain.Entities.Enums;
 
 namespace MessAidVOne.Application.Features.MessManagement.Commands
 {
@@ -9,19 +10,20 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IRepository<UserInformation> _userInformationRepository;
         private readonly IRepository<MessInformation> _messInformationRepository;
 
         public CreatMessCommandHandler(IUnitOfWork unitOfWork, ICloudinaryService cloudinaryService)
         {
             _unitOfWork = unitOfWork;
             _cloudinaryService = cloudinaryService;
+            _userInformationRepository = _unitOfWork.Repository<UserInformation>();
             _messInformationRepository = _unitOfWork.Repository<MessInformation>();
-
         }
 
         public async Task<Result<MessInformationDto>> Handle(CreatMessCommand request, CancellationToken cancellationToken)
         {
-            var (IsValid, Message) = await ValidateCreatMessRequest(request);
+            var (IsValid, Message, User) = await ValidateCreatMessRequest(request);
             if (!IsValid)
             {
                 return Result<MessInformationDto>.Failure(Message);
@@ -45,6 +47,21 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
                 IsActive = true
             };
 
+            messInfo.MemberInformations = new List<MemberInformation>
+            {
+                new MemberInformation
+                {
+                    Name = User!.Name,
+                    Email = User.Email,
+                    PhotoUrl = photoUrl,
+                    Type = MemberType.MessManager,
+                    IsActive = true,
+                    JoinedDate = DateTime.UtcNow,
+                    UserId = AppUserContext.UserId,
+                    IsMealAutoUpdate = false
+                }
+            };
+
             await _messInformationRepository.AddAsync(messInfo);
             await _unitOfWork.SaveChangesAsync();
 
@@ -58,7 +75,7 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
                 { "ActivityEvent", ActivityEvents.CreatedMess },
                 { "Placeholders", new Dictionary<string, string>
                     {
-                        { "#ActionUserName", AppUserContext.UserName.ToString() },
+                        { "#ActionUserId", AppUserContext.UserId.ToString() },
                         { "#MessName", messInfo.Name }
                     }
                 }
@@ -74,14 +91,20 @@ namespace MessAidVOne.Application.Features.MessManagement.Commands
             }, metaData: metadata);
         }
 
-        private async Task<(bool, string)> ValidateCreatMessRequest(CreatMessCommand request)
+        private async Task<(bool, string, UserInformation?)> ValidateCreatMessRequest(CreatMessCommand request)
         {
             if (request == null)
             {
-                return (false, "Invalid information.");
+                return (false, "Invalid information.", null);
             }
 
-            return (true, "Ok");
+            var userInfo = await _userInformationRepository.GetByIdAsync(AppUserContext.UserId);
+            if (userInfo == null || userInfo.IsDeleted == true)
+            {
+                return (false, "User information not found.", null);
+            }
+
+            return (true, "Ok", userInfo);
         }
     }
 }

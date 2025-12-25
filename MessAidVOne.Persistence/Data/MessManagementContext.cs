@@ -175,9 +175,7 @@ public partial class MessManagementContext : DbContext
                 .HasMaxLength(500)
                 .HasColumnName("photo_url");
             entity.Property(e => e.Type).HasMaxLength(20);
-            entity.Property(e => e.UserId)
-                .HasColumnType("mediumtext")
-                .HasColumnName("User_id");
+            entity.Property(e => e.UserId).HasColumnName("User_id");
 
             entity.HasOne(d => d.Mess).WithMany(p => p.MemberInformations)
                 .HasForeignKey(d => d.MessId)

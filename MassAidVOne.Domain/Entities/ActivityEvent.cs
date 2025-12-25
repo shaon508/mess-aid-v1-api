@@ -16,21 +16,33 @@
             Domain: EventDomain.Setting
         );
 
-        public static readonly ActivityEvent AddedMember = new(
-            Key: "Added Member",
-            DescriptionTemplate: "#ActionUserName added #TargetUserId to #MessName",
-            Domain: EventDomain.Mess
-        );
-
         public static readonly ActivityEvent CreatedMess = new(
             Key: "Created Mess",
-            DescriptionTemplate: "#ActionUserName created #MessName",
+            DescriptionTemplate: "{#ActionUserId} created #MessName",
             Domain: EventDomain.Mess
         );
 
         public static readonly ActivityEvent ModifyMess = new(
             Key: "Modified Mess",
-            DescriptionTemplate: "#MessName Modified by #ActionUserName",
+            DescriptionTemplate: "#MessName Modified by {#ActionUserId}",
+            Domain: EventDomain.Mess
+        );
+
+        public static readonly ActivityEvent AddedMember = new(
+           Key: "Added Member",
+           DescriptionTemplate: "{#ActionUserId} added {#TargetUserId} to #MessName",
+           Domain: EventDomain.Mess
+        );
+
+        public static readonly ActivityEvent RemovedMessMember = new(
+            Key: "Removed Mess Member",
+            DescriptionTemplate: "{#ActionUserId} removed {#TargetUserId} from #MessName",
+            Domain: EventDomain.Mess
+        );
+
+        public static readonly ActivityEvent LeavedMessMember = new(
+            Key: "Leaved Mess Member",
+            DescriptionTemplate: "{#ActionUserId} leave from #MessName",
             Domain: EventDomain.Mess
         );
 
@@ -39,9 +51,11 @@
         new()
         {
             [ChangedPassword.Key] = ChangedPassword,
-            [AddedMember.Key] = AddedMember,
             [CreatedMess.Key] = CreatedMess,
-            [ModifyMess.Key] = ModifyMess
+            [ModifyMess.Key] = ModifyMess,
+            [AddedMember.Key] = AddedMember,
+            [RemovedMessMember.Key] = RemovedMessMember,
+            [LeavedMessMember.Key] = LeavedMessMember,
         };
 
         public static ActivityEvent FromKey(string key)

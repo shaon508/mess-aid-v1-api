@@ -16,9 +16,9 @@ public partial class MemberInformation : BaseEntity
 
     public DateTime? LeaveDate { get; set; }
 
-    public string? UserId { get; set; }
+    public long? UserId { get; set; }
 
-    public bool? IsMealAutoUpdate { get; set; }
+    public bool? IsMealAutoUpdate { get; set; } 
 
     public long MessId { get; set; }
 
