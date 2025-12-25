@@ -1,8 +1,5 @@
 ﻿using Hangfire;
 using MessAidVOne.API.Extensions;
-using MessAidVOne.Application.Abstructions;
-using MessAidVOne.Application.DTOs;
-using MessAidVOne.Application.Features.AuthManagement.Commands;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -19,12 +16,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 var tempProvider = builder.Services.BuildServiceProvider();
 
-var handler = tempProvider.GetService<
-    ICommandHandler<LogInCommand, Result<LoginDto>>>();
-
-Console.WriteLine(handler is null
-    ? "❌ Scrutor NOT working"
-    : "✅ Scrutor WORKING");
 
 var app = builder.Build();
 
